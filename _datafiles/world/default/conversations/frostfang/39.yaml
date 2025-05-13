@@ -7,6 +7,8 @@
     MaxContextTurns: 10
     IncludeNames: true
   Conversation:
-    - ["#1 llm Respond to the player's greeting and ask what brings them to your shop"]
-    - ["#2 llm Respond to Moilyn's greeting and state your business"]
-    - ["#1 llm Continue the conversation based on the player's response, maintaining your character as a knowledgeable but somewhat grumpy wizard who values cleanliness and proper respect"]
+    - ["#1 llm Greet the visitor with a mystical air, mentioning how the frost patterns in your shop seem to have foretold their arrival. Ask what brings them to seek your wisdom today."]
+    - ["#2 llm Respond to Elara's mystical greeting and explain your purpose for visiting"]
+    - ["#1 llm Continue the conversation, weaving in elements of frost magic, ancient runes, or Frostfang's mystical history as appropriate to the visitor's response. Maintain your character as a wise and mysterious figure who sees deeper meanings in everyday events."]
+    - ["#2 llm Engage with Elara's mystical insights, asking questions or sharing your thoughts"]
+    - ["#1 llm Share a piece of wisdom or mystical knowledge relevant to the conversation, perhaps referencing the frost patterns, ancient runes, or the hidden magic of Frostfang. End with a subtle hint that there is always more to learn."]
