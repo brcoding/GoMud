@@ -324,6 +324,20 @@ Integrations:
     # Can also be set via environment variable: DISCORD_WEBHOOK_URL
     WebhookUrl: ''
 
+  # - LLM settings -
+  LLM:
+    # Whether LLM integration is enabled
+    Enabled: true
+    # The LLM provider (e.g., "ollama")
+    Provider: "ollama"
+    # The model to use (e.g., "llama2")
+    Model: "llama2"
+    # Base URL for the LLM API
+    BaseURL: "http://localhost:11434"
+    # Temperature for response generation (0.0-1.0)
+    Temperature: 0.7
+    # Maximum number of conversation turns to include in context
+    MaxContextLength: 10
 
 ################################################################################
 #
@@ -390,7 +404,7 @@ Network:
   # - HttpPort -
   #   The port the server listens on for web requests
   #   0 (zero) means none.
-  HttpPort: 80
+  HttpPort: 8080
   # - HttpsPort -
   #   The port the server listens on for web requests
   #   Note: Must have a cert/key file (See FilePaths)

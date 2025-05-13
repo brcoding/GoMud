@@ -7,13 +7,14 @@ import (
 	"github.com/GoMudEngine/GoMud/internal/buffs"
 	"github.com/GoMudEngine/GoMud/internal/events"
 	"github.com/GoMudEngine/GoMud/internal/mobs"
+	"github.com/GoMudEngine/GoMud/internal/mudlog"
 	"github.com/GoMudEngine/GoMud/internal/rooms"
 	"github.com/GoMudEngine/GoMud/internal/users"
 	"github.com/GoMudEngine/GoMud/internal/util"
 )
 
 func SayTo(rest string, mob *mobs.Mob, room *rooms.Room) (bool, error) {
-
+	mudlog.Debug("SayTo", "info", fmt.Sprintf("rest: %v, mob: %v, room: %v", rest, mob, room))
 	// Don't bother if no players are present
 	if room.PlayerCt() < 1 {
 		return true, nil

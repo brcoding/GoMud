@@ -23,12 +23,14 @@ import (
 	"github.com/GoMudEngine/GoMud/internal/colorpatterns"
 	"github.com/GoMudEngine/GoMud/internal/configs"
 	"github.com/GoMudEngine/GoMud/internal/connections"
+	"github.com/GoMudEngine/GoMud/internal/conversations"
 	"github.com/GoMudEngine/GoMud/internal/events"
 	"github.com/GoMudEngine/GoMud/internal/flags"
 	"github.com/GoMudEngine/GoMud/internal/gametime"
 	"github.com/GoMudEngine/GoMud/internal/hooks"
 	"github.com/GoMudEngine/GoMud/internal/inputhandlers"
 	"github.com/GoMudEngine/GoMud/internal/integrations/discord"
+	"github.com/GoMudEngine/GoMud/internal/integrations/llm"
 	"github.com/GoMudEngine/GoMud/internal/items"
 	"github.com/GoMudEngine/GoMud/internal/keywords"
 	"github.com/GoMudEngine/GoMud/internal/language"
@@ -170,6 +172,18 @@ func main() {
 		mudlog.Warn("Discord", "info", "integration is disabled")
 	}
 
+	// LLM integration
+	if bool(c.Integrations.LLM.Enabled) {
+		llm.Init()
+		mudlog.Info("LLM", "info", "integration is enabled")
+	} else {
+		mudlog.Warn("LLM", "info", "integration is disabled")
+	}
+
+	// Initialize conversations package
+	conversations.Init()
+	mudlog.Info("Conversations", "info", "package initialized")
+
 	mudlog.Error(
 		"Starting server",
 		"name", string(c.Server.MudName),
@@ -279,6 +293,10 @@ func main() {
 
 	// cleanup all connections
 	connections.Cleanup()
+
+	// Shutdown conversations package
+	conversations.Shutdown()
+	mudlog.Info("Conversations", "info", "package shutdown")
 
 	for _, s := range allServerListeners {
 		s.Close()

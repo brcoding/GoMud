@@ -4,11 +4,14 @@ package hooks
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/GoMudEngine/GoMud/internal/configs"
+	"github.com/GoMudEngine/GoMud/internal/conversations"
 	"github.com/GoMudEngine/GoMud/internal/events"
 	"github.com/GoMudEngine/GoMud/internal/mobs"
+	"github.com/GoMudEngine/GoMud/internal/mudlog"
 	"github.com/GoMudEngine/GoMud/internal/rooms"
 	"github.com/GoMudEngine/GoMud/internal/scripting"
 	"github.com/GoMudEngine/GoMud/internal/users"
@@ -77,8 +80,162 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 		}
 
 		if mob.InConversation() {
-			mob.Converse()
-			continue
+			mudlog.Debug("IdleMobs", "info", fmt.Sprintf("mob %s (#%d) inConversation with ID: %d", mob.GetName(), mob.GetInstanceId(), mob.GetConversationId()))
+			convId := mob.GetConversationId()
+			if convId == 0 {
+				mudlog.Error("IdleMobs", "error", fmt.Sprintf("Mob %s (#%d) InConversation() is true but GetConversationId() is 0", mob.GetName(), mob.GetInstanceId()))
+				continue
+			}
+
+			// Get conversation to check participant types
+			conv := conversations.GetConversation(convId)
+			if conv == nil {
+				mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Conversation %d not found", convId))
+				conversations.Destroy(convId)
+				continue
+			}
+
+			// GetNextActions now returns concrete mob instance IDs
+			mob1InstId, mob2InstId, actions := conversations.GetNextActions(convId)
+
+			if len(actions) > 0 {
+				// Get participants based on their type
+				var mob1, mob2 *mobs.Mob
+				if !conv.IsPlayer1 {
+					mob1 = mobs.GetInstance(mob1InstId)
+				}
+				if !conv.IsPlayer2 {
+					mob2 = mobs.GetInstance(mob2InstId)
+				}
+
+				// Validate mobs if they are mobs
+				if !conv.IsPlayer1 && mob1 == nil {
+					mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Invalid mob1 instance during conversation %d (ID: %d). Destroying conversation.", convId, mob1InstId))
+					conversations.Destroy(convId)
+					continue
+				}
+				if !conv.IsPlayer2 && mob2 == nil {
+					mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Invalid mob2 instance during conversation %d (ID: %d). Destroying conversation.", convId, mob2InstId))
+					conversations.Destroy(convId)
+					continue
+				}
+
+				// Validate players if they are players
+				if conv.IsPlayer1 {
+					if user := users.GetByUserId(mob1InstId); user == nil {
+						mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Player1 no longer valid during conversation %d (ID: %d). Destroying conversation.", convId, mob1InstId))
+						conversations.Destroy(convId)
+						continue
+					}
+				}
+				if conv.IsPlayer2 {
+					if user := users.GetByUserId(mob2InstId); user == nil {
+						mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Player2 no longer valid during conversation %d (ID: %d). Destroying conversation.", convId, mob2InstId))
+						conversations.Destroy(convId)
+						continue
+					}
+				}
+
+				for _, act := range actions {
+					if len(act) >= 3 {
+						targetPrefix := act[0:3]
+						cmd := act[3:]
+
+						// Replace placeholders with appropriate IDs
+						if !conv.IsPlayer1 && mob1 != nil {
+							cmd = strings.ReplaceAll(cmd, ` #1 `, ` `+mob1.ShorthandId()+` `)
+						}
+						if !conv.IsPlayer2 && mob2 != nil {
+							cmd = strings.ReplaceAll(cmd, ` #2 `, ` `+mob2.ShorthandId()+` `)
+						}
+
+						// Get the room for sending messages
+						var room *rooms.Room
+						if !conv.IsPlayer1 && mob1 != nil {
+							room = rooms.LoadRoom(mob1.Character.RoomId)
+						} else if conv.IsPlayer1 {
+							if user := users.GetByUserId(mob1InstId); user != nil {
+								room = rooms.LoadRoom(user.Character.RoomId)
+							}
+						}
+						if room == nil {
+							mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Could not find room for conversation %d", convId))
+							continue
+						}
+
+						if targetPrefix == `#1 ` {
+							if !conv.IsPlayer1 && mob1 != nil {
+								// Mob1 speaking
+								mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Mob1 (%s #%d) executing: %s", mob1.GetName(), mob1.GetInstanceId(), cmd))
+								mob1.Command(cmd)
+								// Send to room for all to see
+								room.SendText(fmt.Sprintf("%s %s", mob1.GetName(), cmd))
+							} else if conv.IsPlayer1 {
+								// Player1 speaking
+								if user := users.GetByUserId(mob1InstId); user != nil {
+									mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Player1 (%s #%d) executing: %s", user.Character.Name, user.UserId, cmd))
+									// Send to room for all to see
+									room.SendText(fmt.Sprintf("%s %s", user.Character.Name, cmd))
+								}
+							}
+						} else if targetPrefix == `#2 ` {
+							if !conv.IsPlayer2 && mob2 != nil {
+								// Mob2 speaking
+								mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Mob2 (%s #%d) executing: %s", mob2.GetName(), mob2.GetInstanceId(), cmd))
+								mob2.Command(cmd, 1)
+								// Send to room for all to see
+								room.SendText(fmt.Sprintf("%s %s", mob2.GetName(), cmd))
+							} else if conv.IsPlayer2 {
+								// Player2 speaking
+								if user := users.GetByUserId(mob2InstId); user != nil {
+									mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Player2 (%s #%d) executing: %s", user.Character.Name, user.UserId, cmd))
+									// Send to room for all to see
+									room.SendText(fmt.Sprintf("%s %s", user.Character.Name, cmd))
+								}
+							}
+						} else {
+							mudlog.Error("IdleMobs", "conversation_action_error", fmt.Sprintf("Unknown target prefix '%s' in action '%s' for conversation %d", targetPrefix, act, convId))
+						}
+					}
+				}
+
+				// After executing actions, check if conversation is complete
+				if conversations.IsComplete(convId) {
+					mudlog.Debug("IdleMobs", "info", fmt.Sprintf("Conversation %d complete after actions, destroying", convId))
+					// Explicitly destroy the conversation to ensure cleanup
+					conversations.Destroy(convId)
+					// Clear conversation IDs from participants and unblock player input
+					if !conv.IsPlayer1 {
+						if mob1 := mobs.GetInstance(mob1InstId); mob1 != nil {
+							mob1.SetConversation(0)
+						}
+					} else {
+						// Unblock player input if they were in the conversation
+						if user := users.GetByUserId(mob1InstId); user != nil {
+							user.UnblockInput()
+							mudlog.Debug("IdleMobs", "cleanup", fmt.Sprintf("Unblocked input for player %s (ID: %d)", user.Character.Name, user.UserId))
+						}
+					}
+					if !conv.IsPlayer2 {
+						if mob2 := mobs.GetInstance(mob2InstId); mob2 != nil {
+							mob2.SetConversation(0)
+						}
+					} else {
+						// Unblock player input if they were in the conversation
+						if user := users.GetByUserId(mob2InstId); user != nil {
+							user.UnblockInput()
+							mudlog.Debug("IdleMobs", "cleanup", fmt.Sprintf("Unblocked input for player %s (ID: %d)", user.Character.Name, user.UserId))
+						}
+					}
+					continue // Skip the IsComplete check below since we just handled it
+				}
+			}
+
+			// Only check IsComplete if we haven't already destroyed the conversation
+			if !conversations.IsComplete(convId) {
+				mudlog.Debug("IdleMobs", "info", fmt.Sprintf("Conversation %d still active for mob %s (#%d)", convId, mob.GetName(), mob.GetInstanceId()))
+			}
+			continue // Processed conversation, skip other idle actions for this mob
 		}
 
 		// Check whether they are currently in the middle of a path, or have one waiting to start.

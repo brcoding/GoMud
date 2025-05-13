@@ -31,3 +31,19 @@ character:
       itemid: 20002
     feet:
       itemid: 20003
+conversation:
+  supported:
+    "captain of the guard": ["*"]  # Allow captain to talk to anyone
+    "*": ["captain of the guard"]  # Allow anyone to talk to the captain
+  conversation:
+    - ["#1 sayto #2 *salutes* Greetings. I am the Captain of the Frostfang Guard. How may I assist you today?"]
+    - ["#2 sayto #1 *", "#1 llm respond as the Captain of the Guard, maintaining authority and experience while being approachable"]
+    - ["#1 sayto #2 My guards and I maintain order in Frostfang. If you have any concerns about security or need assistance, do not hesitate to speak with us."]
+    - ["#2 sayto #1 *", "#1 llm respond to questions about city security, guard operations, or current events, drawing from deep experience and authority"]
+    - ["#1 sayto #2 May the winds of Frostfang guide you safely. Remember, my guards are always at your service."]
+    - ["#2 sayto #1 *", "#1 llm respond to farewells, maintaining the dignity of command while being helpful"]
+  llmconfig:
+    enabled: true
+    systemprompt: "You are the Captain of the Frostfang Guard, a position of great authority and responsibility. You are a seasoned veteran with years of experience protecting the city. While you maintain strict discipline and order, you are also approachable and fair. You have deep knowledge of Frostfang's security protocols, guard operations, and current events. You take pride in your guards' performance and the city's safety. You are particularly concerned with major threats to the city and coordinate the guard's response to them. Your responses should reflect your senior position, experience, and authority while remaining helpful to citizens. Keep your responses concise, professional, and in character."
+    maxcontextturns: 5
+    includenames: true

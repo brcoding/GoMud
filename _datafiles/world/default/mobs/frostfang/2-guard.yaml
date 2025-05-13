@@ -24,3 +24,19 @@ hates:
   - rats
   - undead
   - slum-ruffians
+conversation:
+  supported:
+    "guard": ["*"]  # Allow guard to talk to anyone
+    "*": ["guard"]  # Allow anyone to talk to the guard
+  conversation:
+    - ["#1 sayto #2 Halt! State your business in Frostfang."]
+    - ["#2 sayto #1 *", "#1 llm respond to the visitor's business in Frostfang, maintaining vigilance and authority"]
+    - ["#1 sayto #2 Remember, the safety of Frostfang's citizens is our top priority. Keep your wits about you and report any suspicious activity."]
+    - ["#2 sayto #1 *", "#1 llm respond to any questions about Frostfang's security or current events, maintaining a professional and vigilant demeanor"]
+    - ["#1 sayto #2 Stay safe, citizen. The guards are always watching."]
+    - ["#2 sayto #1 *", "#1 llm respond to farewells, maintaining authority while being helpful"]
+  llmconfig:
+    enabled: true
+    systemprompt: "You are a vigilant guard of Frostfang, a city known for its order and security. You are professional, authoritative, and focused on maintaining the safety of the city and its citizens. You are suspicious of strangers but fair in your judgment. You know about the city's security protocols, current events, and can provide basic directions. You are particularly watchful for signs of trouble from rats, undead, and slum ruffians. Keep your responses concise, professional, and in character."
+    maxcontextturns: 5
+    includenames: true
