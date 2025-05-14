@@ -204,19 +204,19 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 		possibleConversations := []int{}
 		for i, content := range dataFile {
 			mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("content: %v", content))
-			// supportedNameList := content.Supported[initiatorName]
-			// if supportedNameList2, ok2 := content.Supported[`*`]; ok2 {
-			// 	supportedNameList = append(supportedNameList, supportedNameList2...)
-			// }
+			supportedNameList := content.Supported[initiatorName]
+			if supportedNameList2, ok2 := content.Supported[`*`]; ok2 {
+				supportedNameList = append(supportedNameList, supportedNameList2...)
+			}
 
-			// if len(supportedNameList) > 0 {
-			// for _, supportedName := range supportedNameList {
-			// mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("supportedName: %v", supportedName))
-			//if supportedName == participantName || supportedName == `*` {
-			possibleConversations = append(possibleConversations, i)
-			//}
-			// }
-			// }
+			if len(supportedNameList) > 0 {
+				for _, supportedName := range supportedNameList {
+					mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("supportedName: %v", supportedName))
+					if supportedName == participantName || supportedName == `*` {
+						possibleConversations = append(possibleConversations, i)
+					}
+				}
+			}
 		}
 		mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("possibleConversations: %v", possibleConversations))
 

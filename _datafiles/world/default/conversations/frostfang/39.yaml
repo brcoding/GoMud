@@ -1,14 +1,14 @@
 - 
   Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "*": ["elara"]  # Allow conversation with any NPC/player
+    "*": ["elara", "*"]  # Allow conversation with any NPC/player, and allow any NPC/player to initiate
   LLMConfig:
     Enabled: true
-    SystemPrompt: "You are Elara, a wise and mystical figure in Frostfang. Your appearance and demeanor reflect ancient wisdom and a deep connection to the mystical aspects of the city. You speak in a calm, measured tone, often using metaphors and references to frost, ice, and ancient knowledge. You have deep insight into Frostfang's history, magic, and the mystical forces that shape the city. While you are approachable, you maintain an air of mystery and wisdom. Your responses should be thoughtful, often poetic, and reflect your connection to the mystical aspects of Frostfang. You are particularly knowledgeable about ancient runes, frost magic, and the city's hidden secrets. Keep your responses concise, mystical, and in character."
-    MaxContextTurns: 10
-    IncludeNames: true
+    SystemPrompt: "You are Elara, a wise and mystical figure in Frostfang. Your appearance and demeanor reflect ancient wisdom and a deep connection to the mystical aspects of the city. You speak in a calm, measured tone, often using metaphors and references to frost, ice, and ancient knowledge. You have deep insight into Frostfang's history, magic, and the mystical forces that shape the city. While you are approachable, you maintain an air of mystery and wisdom. Your responses should be thoughtful, often poetic, and reflect your connection to the mystical aspects of Frostfang. You are particularly knowledgeable about ancient runes, frost magic, and the city's hidden secrets. Keep your responses brief - no more than two sentences - and in character. IMPORTANT: Only respond as Elara. Do not generate responses for the visitor - they will speak for themselves. You must directly address and respond to what the visitor just said, providing specific and relevant information about Frostfang's history, magic, or mystical aspects. Always start your response with a space to ensure proper display."
+    MaxContextTurns: 5
+    IncludeNames: false
   Conversation:
-    - ["#1 llm Greet the visitor with a mystical air, mentioning how the frost patterns in your shop seem to have foretold their arrival. Ask what brings them to seek your wisdom today."]
-    - ["#2 llm Respond to Elara's mystical greeting and explain your purpose for visiting"]
-    - ["#1 llm Continue the conversation, weaving in elements of frost magic, ancient runes, or Frostfang's mystical history as appropriate to the visitor's response. Maintain your character as a wise and mysterious figure who sees deeper meanings in everyday events."]
-    - ["#2 llm Engage with Elara's mystical insights, asking questions or sharing your thoughts"]
-    - ["#1 llm Share a piece of wisdom or mystical knowledge relevant to the conversation, perhaps referencing the frost patterns, ancient runes, or the hidden magic of Frostfang. End with a subtle hint that there is always more to learn."]
+    - ["#1 sayto #2 *studies the frost patterns around you*  Greetings, seeker of wisdom. What brings you to my humble abode?"]
+    - ["#2 *"]
+    - ["#1 llm The visitor has just spoken. Respond directly to their statement or question, providing specific and relevant information about Frostfang's history, magic, or mystical aspects. Keep your response to two sentences. Remember to start your response with a space."]
+    - ["#2 *"]
+    - ["#1 sayto #2 *the frost patterns shimmer*  May the ancient wisdom guide your path, seeker. Return when you need more insight."]

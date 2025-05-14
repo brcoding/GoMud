@@ -331,7 +331,8 @@ Integrations:
     # The LLM provider (e.g., "ollama")
     Provider: "ollama"
     # The model to use (e.g., "llama2")
-    Model: "llama2"
+    #Model: "llama2"
+    Model: "mistral"
     # Base URL for the LLM API
     BaseURL: "http://localhost:11434"
     # Temperature for response generation (0.0-1.0)
