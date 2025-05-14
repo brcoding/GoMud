@@ -141,6 +141,11 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 						targetPrefix := act[0:3]
 						cmd := act[3:]
 
+						// Skip placeholder actions
+						if cmd == "*" {
+							continue
+						}
+
 						// Replace placeholders with appropriate IDs
 						if !conv.IsPlayer1 && mob1 != nil {
 							cmd = strings.ReplaceAll(cmd, ` #1 `, ` `+mob1.ShorthandId()+` `)
@@ -167,30 +172,78 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 							if !conv.IsPlayer1 && mob1 != nil {
 								// Mob1 speaking
 								mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Mob1 (%s #%d) executing: %s", mob1.GetName(), mob1.GetInstanceId(), cmd))
-								mob1.Command(cmd)
-								// Send to room for all to see
-								room.SendText(fmt.Sprintf("%s %s", mob1.GetName(), cmd))
+								// Execute the command - the event system will handle room output
+								if strings.HasPrefix(cmd, "sayto") {
+									// For sayto commands, we need to ensure the target is properly set
+									parts := strings.SplitN(cmd, " ", 3)
+									if len(parts) >= 3 {
+										// Get the target based on conversation participant
+										var targetName string
+										if conv.IsPlayer2 {
+											// If player2 is the target, use their name
+											if user := users.GetByUserId(mob2InstId); user != nil {
+												targetName = user.Character.Name
+											}
+										} else if mob2 != nil {
+											// If mob2 is the target, use their name
+											targetName = mob2.Character.Name
+										}
+
+										if targetName != "" {
+											// Reconstruct the command with proper target name
+											newCmd := fmt.Sprintf("sayto %s %s", targetName, parts[2])
+											mob1.Command(newCmd)
+										} else {
+											mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Could not resolve target for sayto command in conversation %d", convId))
+										}
+									}
+								} else {
+									mob1.Command(cmd)
+								}
 							} else if conv.IsPlayer1 {
 								// Player1 speaking
 								if user := users.GetByUserId(mob1InstId); user != nil {
 									mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Player1 (%s #%d) executing: %s", user.Character.Name, user.UserId, cmd))
-									// Send to room for all to see
-									room.SendText(fmt.Sprintf("%s %s", user.Character.Name, cmd))
+									user.Command(cmd)
 								}
 							}
 						} else if targetPrefix == `#2 ` {
 							if !conv.IsPlayer2 && mob2 != nil {
 								// Mob2 speaking
 								mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Mob2 (%s #%d) executing: %s", mob2.GetName(), mob2.GetInstanceId(), cmd))
-								mob2.Command(cmd, 1)
-								// Send to room for all to see
-								room.SendText(fmt.Sprintf("%s %s", mob2.GetName(), cmd))
+								// Execute the command - the event system will handle room output
+								if strings.HasPrefix(cmd, "sayto") {
+									// For sayto commands, we need to ensure the target is properly set
+									parts := strings.SplitN(cmd, " ", 3)
+									if len(parts) >= 3 {
+										// Get the target based on conversation participant
+										var targetName string
+										if conv.IsPlayer1 {
+											// If player1 is the target, use their name
+											if user := users.GetByUserId(mob1InstId); user != nil {
+												targetName = user.Character.Name
+											}
+										} else if mob1 != nil {
+											// If mob1 is the target, use their name
+											targetName = mob1.Character.Name
+										}
+
+										if targetName != "" {
+											// Reconstruct the command with proper target name
+											newCmd := fmt.Sprintf("sayto %s %s", targetName, parts[2])
+											mob2.Command(newCmd, 1)
+										} else {
+											mudlog.Error("IdleMobs", "conversation_error", fmt.Sprintf("Could not resolve target for sayto command in conversation %d", convId))
+										}
+									}
+								} else {
+									mob2.Command(cmd, 1)
+								}
 							} else if conv.IsPlayer2 {
 								// Player2 speaking
 								if user := users.GetByUserId(mob2InstId); user != nil {
 									mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Player2 (%s #%d) executing: %s", user.Character.Name, user.UserId, cmd))
-									// Send to room for all to see
-									room.SendText(fmt.Sprintf("%s %s", user.Character.Name, cmd))
+									user.Command(cmd)
 								}
 							}
 						} else {

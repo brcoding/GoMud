@@ -403,7 +403,7 @@ func HasConverseFile(mobId int, zone string) bool {
 	zone = ZoneNameSanitize(zone)
 
 	cacheKey := strconv.Itoa(mobId) + `-` + zone
-	mudlog.Debug("HasConverseFile", "info", fmt.Sprintf("cachekey: %v", cacheKey))
+
 	if result, ok := converseCheckCache[cacheKey]; ok {
 		if result == false {
 			return false
