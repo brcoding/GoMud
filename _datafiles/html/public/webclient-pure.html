@@ -812,12 +812,28 @@
         // Keep focus on terminal if user clicks inside
         textOutput.addEventListener('mousedown', () => { isDragging = false; });
         textOutput.addEventListener('mousemove', () => { isDragging = true; });
-        textOutput.addEventListener('mouseup', () => {
-            const selectedText = window.getSelection().toString();
-            if (!isDragging && !selectedText) {
-                textInput.focus();
+        textOutput.addEventListener('mouseup', (event) => {
+            // Only focus input if this was a simple click (not a drag) and no text was selected
+            if (!isDragging) {
+                const selection = window.getSelection();
+                const selectedText = selection.toString();
+                
+                // If text was selected in this click, don't change focus
+                // This allows users to select text without losing their selection
+                if (selectedText === '') {
+                    textInput.focus();
+                }
             }
             isDragging = false;
+        });
+
+        // Add a click handler for the terminal container as well
+        document.getElementById('main-container').addEventListener('click', (event) => {
+            // Don't steal focus if user clicked on selected text
+            const selection = window.getSelection();
+            if (selection.toString() === '') {
+                textInput.focus();
+            }
         });
 
         /////////////////////////////////////////////
