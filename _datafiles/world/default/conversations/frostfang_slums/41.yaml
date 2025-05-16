@@ -1,9 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "shadow trainee": ["shadow master"]
-  Conversation:
-    - ["#1 sayto #2 have you had any luck locating the amethyst?"]
-    - ["#2 say Yes, it is in the bank vault."]
-    - ["#1 say Well then, what is the plan to retrieve it?"]
-    - ["#2 say We learned recently of a secret tunnel below it."]
-    - ["#1 say Interesting, then lets talk more about it later in private."]
+supported:
+  "shadow trainee": ["*"]  # Shadow trainee can talk to anyone
+  "*": ["shadow trainee"]  # Anyone can talk to the shadow trainee
+llmconfig:
+  enabled: true
+  systemprompt: "You are a trainee in the mysterious Shadow Clan of Frostfang Slums. You're learning the arts of stealth, subterfuge, and silent combat. You speak quietly and carefully, always aware of who might be listening. While not fully trusted with all clan secrets, you know much about the underground networks, hidden passages, and criminal elements of Frostfang. You're cautious but ambitious, eager to prove yourself. Keep your responses brief - no more than two sentences - and maintain your secretive, alert character."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "*emerges partially from the shadows* What brings you to these shadows, stranger? Few come here... knowingly."
+  farewell: "*steps back into darkness* Our paths may cross again... or perhaps they won't. The shadows decide."
+  idletimeout: 300

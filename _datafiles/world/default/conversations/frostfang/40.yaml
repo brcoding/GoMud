@@ -1,9 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "rodric": ["wench"]
-  Conversation:
-    - ["#1 sayto #2 I'll 'ave a mug 'o ale, wench!"]
-    - ["#2 say Very well, Rodric, but be off with you. We don't need you lingering around the guests smelling like death."]
-    - ["#2 emote hands Rodric a mug."]
-    - ["#1 say Aye, i'll be off, then."]
-    - ["#2 emote mumbles something under their breath."]
+supported:
+  "blacksmith": ["*"]  # Blacksmith can talk to anyone
+  "*": ["blacksmith"]  # Anyone can talk to the blacksmith
+llmconfig:
+  enabled: true
+  systemprompt: "You are the blacksmith of Frostfang, a skilled craftsman who creates and repairs weapons and armor. You speak with confidence about metalworking, with occasional references to forges, hammers, and anvils. You're proud of your work and knowledgeable about various weapons and armor types. While you're friendly, you're also no-nonsense and straightforward. You occasionally refer to the sound of hammering or the heat of the forge. Keep your responses concise - no more than two sentences - and maintain your practical craftsman character."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "*wipes hands on apron* Well met, traveler! Looking for some quality steel or repairs?"
+  farewell: "*returns to the forge* Good fortune to you. Return if you need anything forged or mended."
+  idletimeout: 300

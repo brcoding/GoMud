@@ -1,6 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "rat": ["rat", "big rat"]
-  Conversation:
-    - ["#1 sayto #2 SQUEEK!"]
-    - ["#2 sayto #1 SQUEEEEEEEK!"]
+supported:
+  "rat": ["rat", "big rat"]
+  "*": ["rat"]  # Allow anyone to talk to rats
+llmconfig:
+  enabled: true
+  systemprompt: "You are a rat in a fantasy RPG. You communicate with simple squeaks and rodent-like behaviors. Your responses should be very short, consisting mainly of 'SQUEEK' with occasional simple actions like *sniffs* or *scurries*. Keep responses under 10 words."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "*sniffs curiously* SQUEEK!"
+  farewell: "*scurries away* SQUEEEEEEEK!"
+  idletimeout: 300

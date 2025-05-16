@@ -1,15 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Participant" => "Initiator" allowed to use this conversation
-    "guard": ["guard"]
-  Conversation:
-    - ["#1 emote nods"]
-    - ["#1 sayto #2 Good day."]
-    - ["#2 sayto #1 Good day to you."]
-- 
-  Supported: # A map of lowercase names of "Participant" => "Initiator" allowed to use this conversation
-    "guard": ["rat"]
-  Conversation:
-    - ["#1 sayto #2 Evening, little one. You're out late. Did you find anything of interest tonight?"]
-    - ["#2 sayto #1 Squeak, squeak."]
-    - ["#1 sayto #2 Ah, scavenging for scraps, I see. There's plenty to find in the alleys, if you know where to look."]
-    - ["#2 sayto #1 Squeak."]
+supported:
+  "guide": ["*"]  # Guide can talk to anyone
+  "*": ["guide"]  # Anyone can talk to the guide
+llmconfig:
+  enabled: true
+  systemprompt: "You are a helpful guide in Startland, the beginning area for new adventurers. Your purpose is to help newcomers learn the basics of the game. You're friendly, patient, and knowledgeable about game mechanics, commands, and getting started in the world. You provide clear, simple instructions and encouragement. Keep your responses concise - no more than two sentences - and maintain your helpful, tutorial-focused character."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "Welcome, new adventurer! I'm here to help you learn the basics of your journey. What would you like to know?"
+  farewell: "Good luck on your adventures! Remember, type 'help' anytime you need assistance."
+  idletimeout: 300

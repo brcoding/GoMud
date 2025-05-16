@@ -21,7 +21,6 @@ import (
 var (
 	converseCheckCache   = map[string]bool{}
 	conversations        = map[int]*Conversation{}
-	conversationCounter  = map[string]int{}
 	conversationUniqueId = 0
 	conversationMutex    sync.RWMutex  // Mutex for conversations map
 	shutdownChan         chan struct{} // Channel to signal shutdown
@@ -91,6 +90,29 @@ func Destroy(conversationId int) {
 			}
 		}()
 	}
+}
+
+// Conversation represents an active conversation between two entities
+type Conversation struct {
+	Id             int
+	MobInstanceId1 int    // For mob1 (if it's a mob)
+	MobInstanceId2 int    // For mob2 (if it's a mob)
+	PlayerName1    string // For participant1 (if it's a player)
+	PlayerName2    string // For participant2 (if it's a player)
+	IsPlayer1      bool   // Whether participant1 is a player
+	IsPlayer2      bool   // Whether participant2 is a player
+	StartRound     uint64
+	LastRound      uint64
+	LastActivity   time.Time // Track last activity for timeout
+	// LLM-specific fields
+	LLMConfig   *LLMConversationConfig
+	Context     []string // Conversation history for LLM context
+	LastLLMTime time.Time
+	LLMCooldown time.Duration // Minimum time between LLM calls
+	// New fields for dynamic conversation
+	HasGreeted    bool // Track if initial greeting has been given
+	HasFarewelled bool // Track if farewell has been given
+	Active        bool // Whether the conversation is currently active
 }
 
 // Returns a non empty ConversationId if successful
@@ -184,7 +206,7 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 		return 0
 	}
 
-	var dataFile []ConversationData
+	var dataFile ConversationData
 
 	err = yaml.Unmarshal(bytes, &dataFile)
 	if err != nil {
@@ -194,71 +216,55 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 
 	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("dataFile: %v", dataFile))
 
-	// Actual chosen conversation index
-	chosenIndex := 0
-
-	if len(forceIndex) > 0 && forceIndex[0] >= 0 && forceIndex[0] < len(dataFile) {
-		chosenIndex = forceIndex[0]
-	} else {
-		mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("no forceIndex, so finding possible conversations"))
-		possibleConversations := []int{}
-		for i, content := range dataFile {
-			mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("content: %v", content))
-			supportedNameList := content.Supported[initiatorName]
-			if supportedNameList2, ok2 := content.Supported[`*`]; ok2 {
-				supportedNameList = append(supportedNameList, supportedNameList2...)
-			}
-
-			if len(supportedNameList) > 0 {
-				for _, supportedName := range supportedNameList {
-					mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("supportedName: %v", supportedName))
-					if supportedName == participantName || supportedName == `*` {
-						possibleConversations = append(possibleConversations, i)
-					}
-				}
-			}
-		}
-		mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("possibleConversations: %v", possibleConversations))
-
-		if len(possibleConversations) == 0 {
-			return 0
-		}
-
-		lowestCount := -1
-		for _, index := range possibleConversations {
-			val := conversationCounter[fmt.Sprintf(`%s:%d`, fileName, index)]
-			mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("val: %v", val))
-			if val < lowestCount || lowestCount == -1 {
-				lowestCount = val
-				chosenIndex = index
+	// Validate that the conversation is supported
+	supported := false
+	if supportedNames, ok := dataFile.Supported[initiatorName]; ok {
+		for _, name := range supportedNames {
+			if name == participantName || name == "*" {
+				supported = true
+				break
 			}
 		}
 	}
-
-	trackingTag := fmt.Sprintf(`%s:%d`, fileName, chosenIndex)
-	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("trackingTag: %v", trackingTag))
-	conversationCounter[trackingTag] = conversationCounter[trackingTag] + 1
-	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("conversationCounter: %v", conversationCounter))
+	if !supported {
+		mudlog.Debug("AttemptConversation()", "info", "Conversation not supported between these participants")
+		return 0
+	}
 
 	conversationUniqueId++
+
+	// Set default values for new conversation
+	llmConfig := dataFile.LLMConfig
+	if llmConfig == nil {
+		llmConfig = &LLMConversationConfig{
+			Enabled:         true,
+			MaxContextTurns: 10,
+			IncludeNames:    true,
+			IdleTimeout:     300, // 5 minutes default timeout
+		}
+	}
+	if llmConfig.IdleTimeout == 0 {
+		llmConfig.IdleTimeout = 300 // 5 minutes default timeout
+	}
 
 	conversations[conversationUniqueId] = &Conversation{
 		Id:             conversationUniqueId,
 		MobInstanceId1: initatorInstanceId,
 		MobInstanceId2: participantInstanceId,
-		PlayerName1:    mob1Name, // Store the actual name, whether it's a mob or player
-		PlayerName2:    mob2Name, // Store the actual name, whether it's a mob or player
+		PlayerName1:    mob1Name,
+		PlayerName2:    mob2Name,
 		IsPlayer1:      isPlayer1,
 		IsPlayer2:      isPlayer2,
 		StartRound:     util.GetRoundCount(),
-		Position:       0,
-		ActionList:     dataFile[chosenIndex].Conversation,
-		LLMConfig:      dataFile[chosenIndex].LLMConfig,
+		LastRound:      util.GetRoundCount(),
+		LastActivity:   time.Now(),
+		LLMConfig:      llmConfig,
 		Context:        make([]string, 0),
 		LLMCooldown:    2 * time.Second,
+		Active:         true,
 	}
 
-	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("Created conversation: %+v", conversations[conversationUniqueId]))
+	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("Created dynamic conversation: %+v", conversations[conversationUniqueId]))
 
 	return conversationUniqueId
 }
@@ -271,10 +277,13 @@ func IsComplete(conversationId int) bool {
 	if c == nil {
 		return true
 	}
-	if c.Position >= len(c.ActionList) {
+
+	// For dynamic conversations, a conversation is complete when it's no longer active
+	if !c.Active {
 		Destroy(conversationId)
 		return true
 	}
+
 	return false
 }
 
@@ -353,39 +362,15 @@ func GetNextActions(convId int) (mob1Id int, mob2Id int, actions []string) {
 		mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Using player2 ID: %d", id2))
 	}
 
-	// Get next actions
+	// Get next actions - for dynamic conversations, we don't rely on a fixed sequence
 	na := c.NextActions(util.GetRoundCount())
 	if len(na) == 0 {
-		// If no actions, check if conversation is complete
-		if c.Position >= len(c.ActionList) {
-			mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Conversation %d complete, destroying", convId))
-			go func() { Destroy(convId) }()
-		}
+		// No actions required at this time
 		return id1, id2, []string{}
 	}
 
 	mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Returning %d actions for conversation %d", len(na), convId))
 	return id1, id2, na
-}
-
-type Conversation struct {
-	Id             int
-	MobInstanceId1 int    // For mob1 (if it's a mob)
-	MobInstanceId2 int    // For mob2 (if it's a mob)
-	PlayerName1    string // For participant1 (if it's a player)
-	PlayerName2    string // For participant2 (if it's a player)
-	IsPlayer1      bool   // Whether participant1 is a player
-	IsPlayer2      bool   // Whether participant2 is a player
-	StartRound     uint64
-	LastRound      uint64
-	// What the actions are and where we are in them
-	Position   int
-	ActionList [][]string
-	// LLM-specific fields
-	LLMConfig   *LLMConversationConfig
-	Context     []string // Conversation history for LLM context
-	LastLLMTime time.Time
-	LLMCooldown time.Duration // Minimum time between LLM calls
 }
 
 func ZoneNameSanitize(zone string) string {
@@ -514,147 +499,9 @@ func (c *Conversation) NextActions(roundNow uint64) []string {
 
 	c.LastRound = roundNow
 
-	// Validate mob instances before proceeding
-	mob1, mob2, valid := c.validateMobInstances()
-	if !valid {
-		return []string{}
-	}
-
-	pos := c.Position
-	if c.Position >= len(c.ActionList) {
-		return []string{}
-	}
-
-	c.Position++
-
-	actions := append([]string{}, c.ActionList[pos]...)
-
-	// If LLM is enabled for this conversation, process any LLM actions
-	if c.LLMConfig != nil && c.LLMConfig.Enabled && bool(configs.GetIntegrationsConfig().LLM.Enabled) {
-		// Get names for both participants
-		name1 := c.PlayerName1
-		if !c.IsPlayer1 && mob1 != nil {
-			name1 = mob1.GetName()
-		}
-		name2 := c.PlayerName2
-		if !c.IsPlayer2 && mob2 != nil {
-			name2 = mob2.GetName()
-		}
-		actions = c.processLLMActions(actions, name1, name2)
-	}
-
-	return actions
-}
-
-// processLLMActions handles LLM-specific actions in the conversation
-// It now receives concrete *mobs.Mob types
-func (c *Conversation) processLLMActions(actions []string, playerName1 string, playerName2 string) []string {
-	select {
-	case <-shutdownChan:
-		return actions
-	default:
-		// The calling function (NextActions) already validated mob1 and mob2 are non-nil
-		// But we re-validate inside the loop before LLM calls for extra safety
-
-		// Check cooldown
-		if time.Since(c.LastLLMTime) < c.LLMCooldown {
-			mudlog.Debug("LLM", "info", fmt.Sprintf("Skipping LLM call due to cooldown. Time since last call: %v", time.Since(c.LastLLMTime)))
-			return actions
-		}
-
-		// Process each action
-		for i, action := range actions {
-			if len(action) < 3 {
-				continue
-			}
-
-			target := action[0:3]
-			cmd := action[3:]
-
-			// Check if this is an LLM action
-			if strings.HasPrefix(cmd, "llm ") {
-				mudlog.Info("LLM", "info", fmt.Sprintf("Processing LLM action: %s", action))
-
-				// Extract the prompt
-				prompt := strings.TrimPrefix(cmd, "llm ")
-
-				// Build context using the validated mob instances
-				context, err := c.buildLLMContext(playerName1, playerName2) // Use newly validated mobs
-				if err != nil {
-					mudlog.Error("LLM", "error", fmt.Sprintf("Failed to build context: %v", err))
-					actions[i] = "" // Clear action on error
-					continue
-				}
-				mudlog.Debug("LLM", "context", fmt.Sprintf("Context for LLM: %v", context))
-
-				// Generate response
-				response := llm.GenerateResponse(prompt, context)
-				if response.Error != nil {
-					mudlog.Error("LLM", "error", fmt.Sprintf("Failed to generate response: %v", response.Error))
-					actions[i] = "" // Clear action on error
-					continue
-				}
-
-				mudlog.Info("LLM", "response", fmt.Sprintf("Generated response: %s", response.Text))
-
-				// Update the action with the generated response
-				if target == "#1 " {
-					actions[i] = fmt.Sprintf("#1 sayto #2 %s", response.Text)
-				} else {
-					actions[i] = fmt.Sprintf("#2 sayto #1 %s", response.Text)
-				}
-
-				// Update context and cooldown
-				c.Context = append(c.Context, response.Text)
-				if len(c.Context) > c.LLMConfig.MaxContextTurns {
-					c.Context = c.Context[len(c.Context)-c.LLMConfig.MaxContextTurns:]
-				}
-				c.LastLLMTime = time.Now()
-			}
-		}
-
-		// Filter out any cleared actions (optional, depends on desired behavior)
-		validActions := make([]string, 0, len(actions))
-		for _, act := range actions {
-			if act != "" {
-				validActions = append(validActions, act)
-			}
-		}
-
-		return validActions
-	}
-}
-
-// buildLLMContext creates the context for the LLM based on conversation history
-// It now takes mob names as strings instead of mob objects
-func (c *Conversation) buildLLMContext(mob1Name string, mob2Name string) ([]string, error) {
-	// Validate mob names
-	if mob1Name == "" || mob2Name == "" {
-		return nil, fmt.Errorf("invalid mob names in buildLLMContext: mob1=%q, mob2=%q", mob1Name, mob2Name)
-	}
-
-	context := make([]string, 0)
-
-	// Add system prompt if provided
-	if c.LLMConfig != nil && c.LLMConfig.SystemPrompt != "" {
-		context = append(context, c.LLMConfig.SystemPrompt)
-		mudlog.Debug("LLM", "context", fmt.Sprintf("Added system prompt: %s", c.LLMConfig.SystemPrompt))
-	}
-
-	// Add NPC names if enabled
-	if c.LLMConfig != nil && c.LLMConfig.IncludeNames {
-		context = append(context, fmt.Sprintf("NPC1: %s", mob1Name))
-		context = append(context, fmt.Sprintf("NPC2: %s", mob2Name))
-		mudlog.Debug("LLM", "context", fmt.Sprintf("Added NPC names: %s, %s", mob1Name, mob2Name))
-	}
-
-	// Add conversation history
-	context = append(context, c.Context...)
-	if len(c.Context) > 0 {
-		mudlog.Debug("LLM", "context", fmt.Sprintf("Added conversation history: %v", c.Context))
-	}
-
-	return context, nil
+	// For dynamic conversations, we don't need to validate mob instances here
+	// and simply return an empty list, as actions are handled by ProcessPlayerInput
+	return []string{}
 }
 
 func getConversation(conversationId int) *Conversation {
@@ -702,4 +549,131 @@ func GetConversation(conversationId int) *Conversation {
 	conversationMutex.RLock()
 	defer conversationMutex.RUnlock()
 	return getConversation(conversationId)
+}
+
+// ProcessPlayerInput handles a player's input in an active conversation
+func ProcessPlayerInput(conversationId int, playerInput string) (string, error) {
+	conversationMutex.RLock()
+	conv := getConversation(conversationId)
+	if conv == nil {
+		conversationMutex.RUnlock()
+		return "", fmt.Errorf("conversation not found")
+	}
+	conversationMutex.RUnlock()
+
+	// Check if conversation has timed out
+	if time.Since(conv.LastActivity) > time.Duration(conv.LLMConfig.IdleTimeout)*time.Second {
+		conv.Active = false
+		return "", fmt.Errorf("conversation timed out")
+	}
+
+	// Update last activity
+	conv.LastActivity = time.Now()
+
+	// Handle initial greeting if not given
+	if !conv.HasGreeted && conv.LLMConfig.Greeting != "" {
+		conv.HasGreeted = true
+		return conv.LLMConfig.Greeting, nil
+	}
+
+	// Check cooldown
+	if time.Since(conv.LastLLMTime) < conv.LLMCooldown {
+		return "", fmt.Errorf("please wait before speaking again")
+	}
+
+	// Validate mob instances before proceeding
+	_, _, valid := conv.validateMobInstances()
+	if !valid {
+		return "", fmt.Errorf("conversation participants are no longer valid")
+	}
+
+	// Build context for the LLM
+	context, err := conv.buildLLMContext(conv.PlayerName1, conv.PlayerName2)
+	if err != nil {
+		return "", fmt.Errorf("failed to build conversation context: %v", err)
+	}
+
+	// Add the player's input to the context
+	context = append(context, fmt.Sprintf("Player: %s", playerInput))
+
+	// Generate response
+	response := llm.GenerateResponse("Respond to the player's input in character, maintaining your personality and knowledge.", context)
+	if response.Error != nil {
+		return "", fmt.Errorf("failed to generate response: %v", response.Error)
+	}
+
+	// Update conversation state
+	conv.Context = append(conv.Context, playerInput, response.Text)
+	if len(conv.Context) > conv.LLMConfig.MaxContextTurns*2 { // *2 because each turn has input and response
+		conv.Context = conv.Context[len(conv.Context)-conv.LLMConfig.MaxContextTurns*2:]
+	}
+	conv.LastLLMTime = time.Now()
+
+	return response.Text, nil
+}
+
+// EndConversation gracefully ends a conversation
+func EndConversation(conversationId int) (string, error) {
+	conversationMutex.RLock()
+	conv := getConversation(conversationId)
+	if conv == nil {
+		conversationMutex.RUnlock()
+		return "", fmt.Errorf("conversation not found")
+	}
+	conversationMutex.RUnlock()
+
+	if !conv.Active {
+		return "", fmt.Errorf("conversation already ended")
+	}
+
+	conv.Active = false
+	conv.HasFarewelled = true
+
+	if conv.LLMConfig.Farewell != "" {
+		return conv.LLMConfig.Farewell, nil
+	}
+
+	// Generate a farewell using LLM if no static farewell is defined
+	context, err := conv.buildLLMContext(conv.PlayerName1, conv.PlayerName2)
+	if err != nil {
+		return "", fmt.Errorf("failed to build farewell context: %v", err)
+	}
+
+	response := llm.GenerateResponse("The conversation is ending. Provide a natural farewell that matches your character.", context)
+	if response.Error != nil {
+		return "", fmt.Errorf("failed to generate farewell: %v", response.Error)
+	}
+
+	return response.Text, nil
+}
+
+// buildLLMContext creates the context for the LLM based on conversation history
+func (c *Conversation) buildLLMContext(mob1Name string, mob2Name string) ([]string, error) {
+	// Validate mob names
+	if mob1Name == "" || mob2Name == "" {
+		return nil, fmt.Errorf("invalid mob names in buildLLMContext: mob1=%q, mob2=%q", mob1Name, mob2Name)
+	}
+
+	context := make([]string, 0)
+
+	// Add system prompt if provided
+	if c.LLMConfig != nil && c.LLMConfig.SystemPrompt != "" {
+		context = append(context, c.LLMConfig.SystemPrompt)
+		mudlog.Debug("LLM", "context", fmt.Sprintf("Added system prompt: %s", c.LLMConfig.SystemPrompt))
+	}
+
+	// Add NPC names if enabled
+	if c.LLMConfig != nil && c.LLMConfig.IncludeNames {
+		context = append(context, fmt.Sprintf("NPC1: %s", mob1Name))
+		context = append(context, fmt.Sprintf("NPC2: %s", mob2Name))
+		mudlog.Debug("LLM", "context", fmt.Sprintf("Added NPC names: %s, %s", mob1Name, mob2Name))
+	}
+
+	// Add conversation history
+	context = append(context, c.Context...)
+	if len(c.Context) > 0 {
+		mudlog.Debug("LLM", "context", fmt.Sprintf("Added conversation history: %v", c.Context))
+	}
+
+	return context, nil
 }

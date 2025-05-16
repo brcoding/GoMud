@@ -1,20 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "*": ["moilyn the wizard"]  # Allow conversation with any NPC/player
-  LLMConfig:
-    Enabled: true
-    SystemPrompt: "You are Moilyn the Wizard, a knowledgeable but somewhat grumpy magic shop owner in Frostfang. You are particular about cleanliness and get annoyed when people track mud into your shop. You are willing to discuss magic, sell magical items, and share your knowledge with those who show proper respect. You have a deep understanding of arcane arts and can identify magical items. You are also aware of the city's secrets and can provide information about local legends and hidden places, though you may be reluctant to share such knowledge with strangers. Your shop is a place of both commerce and learning, but you expect visitors to maintain proper decorum and cleanliness."
-    MaxContextTurns: 10
-    IncludeNames: true
-  Conversation:
-    - ["#1 llm Respond to the player's greeting and ask what brings them to your shop"]
-    - ["#2 llm Respond to Moilyn's greeting and state your business"]
-    - ["#1 llm Continue the conversation based on the player's response, maintaining your character as a knowledgeable but somewhat grumpy wizard who values cleanliness and proper respect"]
-
-# - 
-#   Supported: # Keep the original conversation for guards
-#     "moilyn the wizard": ["guard", "captain of the guard"]
-#   Conversation:
-#     - ["#1 say Oooooh! You accursed soldiers tracking mud and dirt into my shop!"]
-#     - ["#2 emote grins sheepishly."]
-#     - ["#2 say My apologies Moilyn."]
+supported:
+  "bartender": ["*"]  # Bartender can talk to anyone
+  "*": ["bartender"]  # Anyone can talk to the bartender
+llmconfig:
+  enabled: true
+  systemprompt: "You are the bartender of the Frostfang tavern. You're friendly, attentive, and have a good ear for stories. You know all the local gossip, rumors, and regulars at your establishment. You have a wealth of knowledge about drinks, local events, and the comings and goings of various citizens and travelers. You occasionally mention cleaning mugs or serving drinks while you talk. Keep your responses brief - no more than two sentences - and maintain your jovial tavern-keeper personality."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "*polishes a mug* Welcome to my tavern, friend! What can I get for you today?"
+  farewell: "*nods and continues serving* Come back anytime! There's always a warm drink waiting."
+  idletimeout: 300

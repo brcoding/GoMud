@@ -93,6 +93,58 @@ func Say(rest string, user *users.UserRecord, room *rooms.Room, flags events.Eve
 		rest = drunkify(rest)
 	}
 
+	// Check if player is in an active conversation with an NPC
+	for _, mobId := range room.GetMobs() {
+		mob := mobs.GetInstance(mobId)
+		if mob == nil || !mob.InConversation() {
+			continue
+		}
+
+		// Get the conversation ID from the mob
+		conversationId := mob.GetConversationId()
+		if conversationId <= 0 {
+			continue
+		}
+
+		// Check if this conversation involves the current player
+		conversation := conversations.GetConversation(conversationId)
+		if conversation == nil {
+			continue
+		}
+
+		if conversation.MobInstanceId1 == mob.InstanceId && conversation.MobInstanceId2 == user.UserId {
+			// First show the player's message immediately
+			if isSneaking {
+				room.SendTextCommunication(fmt.Sprintf(`someone says, "<ansi fg="saytext">%s</ansi>"`, rest), user.UserId)
+			} else {
+				room.SendTextCommunication(fmt.Sprintf(`<ansi fg="username">%s</ansi> says, "<ansi fg="saytext">%s</ansi>"`, user.Character.Name, rest), user.UserId)
+			}
+			user.SendText(fmt.Sprintf(`You say, "<ansi fg="saytext">%s</ansi>"`, rest))
+
+			// Process the NPC's response asynchronously
+			go func(convId int, userInput string, mobInst *mobs.Mob, userRef *users.UserRecord, roomRef *rooms.Room) {
+				// Player is participant in this conversation
+				response, err := conversations.ProcessPlayerInput(convId, userInput)
+				if err == nil && response != "" {
+					// Send the response to the player
+					if !userRef.Character.HasBuffFlag(buffs.Hidden) {
+						roomRef.SendTextCommunication(fmt.Sprintf(`<ansi fg="username">%s</ansi> says to <ansi fg="username">%s</ansi>, "<ansi fg="saytext">%s</ansi>"`, mobInst.Character.Name, userRef.Character.Name, response), userRef.UserId)
+					} else {
+						roomRef.SendTextCommunication(fmt.Sprintf(`<ansi fg="username">%s</ansi> says to someone, "<ansi fg="saytext">%s</ansi>"`, mobInst.Character.Name, response), userRef.UserId)
+					}
+					userRef.SendText(fmt.Sprintf(`<ansi fg="username">%s</ansi> says to you, "<ansi fg="saytext">%s</ansi>"`, mobInst.Character.Name, response))
+
+					mudlog.Debug("ProcessPlayerInput", "response", fmt.Sprintf("NPC response: %s", response))
+				} else if err != nil {
+					mudlog.Error("ProcessPlayerInput", "error", fmt.Sprintf("Error processing player input: %v", err))
+				}
+			}(conversationId, rest, mob, user, room)
+
+			// Since we've processed the conversation, we can return
+			return true, nil
+		}
+	}
+
 	// Extract potential names from the message
 	words := strings.Fields(strings.ToLower(rest))
 	var potentialNames []string
@@ -212,6 +264,26 @@ func handleNPCResponse(mob *mobs.Mob, user *users.UserRecord, room *rooms.Room, 
 	if conversationId > 0 {
 		mob.SetConversation(conversationId)
 		mudlog.Debug("NPC Response", "context", fmt.Sprintf("Context for %s: %v", mob.Character.Name, context))
+
+		// Process the NPC's response asynchronously
+		go func(convId int, userInput string, mobInst *mobs.Mob, userRef *users.UserRecord, roomRef *rooms.Room) {
+			// Get initial greeting or response from the conversation
+			response, err := conversations.ProcessPlayerInput(convId, userInput)
+			if err == nil && response != "" {
+				// Send the response to the player
+				if !userRef.Character.HasBuffFlag(buffs.Hidden) {
+					roomRef.SendTextCommunication(fmt.Sprintf(`<ansi fg="username">%s</ansi> says to <ansi fg="username">%s</ansi>, "<ansi fg="saytext">%s</ansi>"`, mobInst.Character.Name, userRef.Character.Name, response), userRef.UserId)
+				} else {
+					roomRef.SendTextCommunication(fmt.Sprintf(`<ansi fg="username">%s</ansi> says to someone, "<ansi fg="saytext">%s</ansi>"`, mobInst.Character.Name, response), userRef.UserId)
+				}
+				userRef.SendText(fmt.Sprintf(`<ansi fg="username">%s</ansi> says to you, "<ansi fg="saytext">%s</ansi>"`, mobInst.Character.Name, response))
+
+				mudlog.Debug("ProcessPlayerInput", "response", fmt.Sprintf("NPC response: %s", response))
+			} else if err != nil {
+				mudlog.Error("ProcessPlayerInput", "error", fmt.Sprintf("Error getting response: %v", err))
+			}
+		}(conversationId, originalMessage, mob, user, room)
+
 		return true
 	}
 
