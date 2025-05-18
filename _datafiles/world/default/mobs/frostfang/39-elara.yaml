@@ -5,6 +5,11 @@ hostile: false
 maxwander: 0
 groups: 
   - frostfang-npc
+nicknames:
+  - lara
+  - el
+  - wise one
+  - mystic
 activitylevel: 20
 character:
   name: elara

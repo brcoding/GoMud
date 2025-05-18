@@ -5,16 +5,24 @@ hostile: false
 maxwander: 0
 groups: 
   - frostfang-npc
+nicknames:
+  - master
+  - arms
+  - weapons master
+  - instructor
+  - trainer
+  - combat master
 idlecommands:
-  - 'emote checks the edge of their blade.'
-  - 'emote inspects the training equipment'
-  - 'emote eyes you with a critical gaze'
-  - 'say I can teach you a few things about combat.'
-  - 'say The difference between a good fighter and a great fighter is discipline.'
+  - 'emote glares at the training dummies with disapproval'
+  - 'emote mutters something about "fighters these days" while sharpening a blade'
+  - 'emote spits on the ground and adjusts his armor with a grimace'
+  - 'say You call that a stance? My grandmother could knock you over with a feather!'
+  - 'say Pain is the best teacher - and I''ve got plenty of lessons for the lot of you.'
+  - 'emote scowls at passersby, looking for any sign of weakness'
 activitylevel: 50
 character:
   name: master-at-arms
-  description: 'he Master-at-Arms is a seasoned warrior and expert in medieval weaponry, charged with the crucial role of training soldiers and adventurers in the arts of combat. Known for their unparalleled skill with a variety of weapons, from swords and axes to bows and polearms, they possess not only physical prowess but also deep strategic knowledge of battlefield tactics. In the halls of the castle or the dusty training grounds, the Master-at-Arms commands respect and authority, shaping novices into formidable fighters. Their keen eye for technique, relentless discipline, and unwavering commitment to the art of war make them an invaluable asset to any lord or commander seeking to strengthen their forces.'
+  description: 'The Master-at-Arms stands like a weathered oak in the training yard, his face a roadmap of scars from countless battles. His grizzled beard barely conceals a permanent scowl, and his eyes - one a piercing blue, the other milky from an old wound - scrutinize everyone for signs of weakness. Decades of combat have left his body hardened but twisted, with a pronounced limp that does nothing to diminish his imposing presence. His armor, though impeccably maintained, bears the dents and scratches of real combat rather than ceremonial use. When he speaks, his voice emerges as a gravelly growl, honed by years of shouting orders over the din of battle. Despite his intimidating demeanor and perpetual irritability, his training methods produce undeniably effective warriors, earning him grudging respect throughout Frostfang.'
   raceid: 1
   level: 25
   alignment: 35

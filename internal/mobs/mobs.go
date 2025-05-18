@@ -65,6 +65,7 @@ type Mob struct {
 	LastIdleCommand uint8    `yaml:"-"` // Track what hte last used idlecommand was
 	BoredomCounter  uint8    `yaml:"-"` // how many rounds have passed since this mob has seen a player
 	Groups          []string // What group do they identify with? Helps with teamwork
+	Nicknames       []string `yaml:"nicknames,omitempty"`    // Alternative names that can be used to refer to this mob
 	Hates           []string `yaml:"hates,omitempty"`        // What NPC groups or races do they hate and probably fight if encountered?
 	IdleCommands    []string `yaml:"idlecommands,omitempty"` // Commands they may do while idle (not in combat)
 	AngryCommands   []string // randomly chosen to queue when they are angry/entering combat.

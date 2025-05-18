@@ -4,6 +4,12 @@ itemdropchance: 2
 hostile: false
 groups: 
   - frostfang-npc
+nicknames:
+  - ivar
+  - blacksmith
+  - smith
+  - armorer
+  - froststeel
 idlecommands:
   - 'say type `list` to see my wares'
   - 'say If you''re looking to sell something, I may be interested... as long as it''s not too special or unique'

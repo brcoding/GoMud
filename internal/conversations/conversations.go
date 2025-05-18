@@ -25,11 +25,26 @@ var (
 	conversationMutex    sync.RWMutex  // Mutex for conversations map
 	shutdownChan         chan struct{} // Channel to signal shutdown
 	shutdownOnce         sync.Once     // Ensure shutdown is called only once
+	// Add conversation memory storage
+	conversationMemory = map[string]map[string]*ConversationMemory{} // Map of mobname -> playername -> memory
+	memoryMutex        sync.RWMutex                                  // Mutex for conversationMemory map
 )
+
+// ConversationMemory stores persistent information between conversations
+type ConversationMemory struct {
+	LastInteraction time.Time         // When the last conversation ended
+	RecentTopics    []string          // Topics discussed in recent conversations
+	Context         []string          // Recent conversation context that was important
+	CustomData      map[string]string // Any custom data to remember
+	ExpirationTime  time.Duration     // How long to remember this conversation
+}
 
 // Init initializes the conversations package
 func Init() {
 	shutdownChan = make(chan struct{})
+
+	// Start memory cleanup goroutine
+	go cleanupMemory()
 }
 
 // Shutdown gracefully shuts down the conversations package
@@ -55,6 +70,9 @@ func Shutdown() {
 // destroyConversation is the internal version that doesn't acquire the mutex
 func destroyConversation(conversationId int) {
 	if conv, ok := conversations[conversationId]; ok {
+		// Store conversation memory before destroying it
+		storeConversationMemory(conv)
+
 		// Only clear conversation IDs from mob instances, not from players
 		if !conv.IsPlayer1 {
 			if mob1 := mobinterfaces.GetInstance(conv.MobInstanceId1); mob1 != nil {
@@ -265,6 +283,41 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 	}
 
 	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("Created dynamic conversation: %+v", conversations[conversationUniqueId]))
+
+	// Check for previous conversation memory and incorporate it
+	var memory *ConversationMemory
+	if !isPlayer1 {
+		memory = getConversationMemory(mob1Name, mob2Name)
+	} else {
+		memory = getConversationMemory(mob2Name, mob1Name)
+	}
+
+	// If we have memory, add it to the conversation context
+	if memory != nil && len(memory.Context) > 0 {
+		lastInteraction := memory.LastInteraction.Format("15:04")
+		timeAgo := time.Since(memory.LastInteraction).Round(time.Minute)
+
+		// Add memory context to new conversation
+		if llmConfig.IncludeNames {
+			conversations[conversationUniqueId].Context = append(
+				conversations[conversationUniqueId].Context,
+				fmt.Sprintf("Previous conversation %v ago around %s:",
+					timeAgo, lastInteraction))
+		}
+
+		// Add recent topics if available
+		if len(memory.RecentTopics) > 0 {
+			topics := strings.Join(memory.RecentTopics, ", ")
+			conversations[conversationUniqueId].Context = append(
+				conversations[conversationUniqueId].Context,
+				fmt.Sprintf("You previously discussed: %s", topics))
+		}
+
+		// Add previous context
+		conversations[conversationUniqueId].Context = append(
+			conversations[conversationUniqueId].Context,
+			memory.Context...)
+	}
 
 	return conversationUniqueId
 }
@@ -570,12 +623,6 @@ func ProcessPlayerInput(conversationId int, playerInput string) (string, error) 
 	// Update last activity
 	conv.LastActivity = time.Now()
 
-	// Handle initial greeting if not given
-	if !conv.HasGreeted && conv.LLMConfig.Greeting != "" {
-		conv.HasGreeted = true
-		return conv.LLMConfig.Greeting, nil
-	}
-
 	// Check cooldown
 	if time.Since(conv.LastLLMTime) < conv.LLMCooldown {
 		return "", fmt.Errorf("please wait before speaking again")
@@ -596,7 +643,54 @@ func ProcessPlayerInput(conversationId int, playerInput string) (string, error) 
 	// Add the player's input to the context
 	context = append(context, fmt.Sprintf("Player: %s", playerInput))
 
-	// Generate response
+	// Determine if this is the first message (needs greeting)
+	isFirstMessage := !conv.HasGreeted && conv.LLMConfig.Greeting != ""
+
+	// Special handling for first message
+	if isFirstMessage {
+		// Set greeting as given
+		conv.HasGreeted = true
+
+		// Generate a response that incorporates both greeting and an answer
+		var prompt string
+		if strings.Contains(conv.LLMConfig.Greeting, "*") {
+			// If greeting contains action indicators (like *looks up*), extract character's first words
+			parts := strings.Split(conv.LLMConfig.Greeting, "\"")
+			if len(parts) >= 2 {
+				// Get the actual spoken part
+				spokenGreeting := parts[1]
+				prompt = fmt.Sprintf(
+					"The player has just approached you and said: \"%s\". Start your response with your greeting: \"%s\" and then naturally address their question or statement.",
+					playerInput, spokenGreeting)
+			} else {
+				prompt = fmt.Sprintf(
+					"The player has just approached you and said: \"%s\". Start with a greeting and then address their question or statement.",
+					playerInput)
+			}
+		} else {
+			prompt = fmt.Sprintf(
+				"The player has just approached you and said: \"%s\". Start your response with your greeting: \"%s\" and then naturally address their question or statement.",
+				playerInput, conv.LLMConfig.Greeting)
+		}
+
+		// Generate the combined greeting + response
+		response := llm.GenerateResponse(prompt, context)
+		if response.Error != nil {
+			// If LLM fails, fall back to static greeting
+			return conv.LLMConfig.Greeting, nil
+		}
+
+		// Update conversation state
+		conv.Context = append(conv.Context, playerInput, response.Text)
+		if len(conv.Context) > conv.LLMConfig.MaxContextTurns*2 {
+			conv.Context = conv.Context[len(conv.Context)-conv.LLMConfig.MaxContextTurns*2:]
+		}
+		conv.LastLLMTime = time.Now()
+
+		return response.Text, nil
+	}
+
+	// For regular (non-first) messages, proceed as before
 	response := llm.GenerateResponse("Respond to the player's input in character, maintaining your personality and knowledge.", context)
 	if response.Error != nil {
 		return "", fmt.Errorf("failed to generate response: %v", response.Error)
@@ -675,5 +769,184 @@ func (c *Conversation) buildLLMContext(mob1Name string, mob2Name string) ([]stri
 		mudlog.Debug("LLM", "context", fmt.Sprintf("Added conversation history: %v", c.Context))
 	}
 
+	// Add conversation memory if it exists
+	var memory *ConversationMemory
+	memory = getConversationMemory(mob1Name, mob2Name)
+
+	if memory != nil && c.LLMConfig != nil && c.LLMConfig.IncludeNames {
+		// Add memory reminder to system prompt
+		if len(memory.RecentTopics) > 0 {
+			topics := strings.Join(memory.RecentTopics, ", ")
+			reminderContext := fmt.Sprintf("You previously spoke with %s about: %s",
+				mob2Name, topics)
+			context = append(context, reminderContext)
+		}
+	}
+
 	return context, nil
+}
+
+// Store memory from a conversation that's ending
+func storeConversationMemory(conv *Conversation) {
+	if conv == nil {
+		return
+	}
+
+	memoryMutex.Lock()
+	defer memoryMutex.Unlock()
+
+	// Get mob and player names
+	var mobName, playerName string
+	if !conv.IsPlayer1 {
+		if mob := mobinterfaces.GetInstance(conv.MobInstanceId1); mob != nil {
+			mobName = strings.ToLower(mob.GetName())
+		}
+	} else {
+		mobName = strings.ToLower(conv.PlayerName1)
+	}
+
+	if !conv.IsPlayer2 {
+		if mob := mobinterfaces.GetInstance(conv.MobInstanceId2); mob != nil {
+			playerName = strings.ToLower(mob.GetName())
+		}
+	} else {
+		playerName = strings.ToLower(conv.PlayerName2)
+	}
+
+	// Ensure we have valid names
+	if mobName == "" || playerName == "" {
+		return
+	}
+
+	// Get or create memory map for this mob
+	if _, ok := conversationMemory[mobName]; !ok {
+		conversationMemory[mobName] = make(map[string]*ConversationMemory)
+	}
+
+	// Get or create memory for this player
+	if _, ok := conversationMemory[mobName][playerName]; !ok {
+		conversationMemory[mobName][playerName] = &ConversationMemory{
+			LastInteraction: time.Now(),
+			RecentTopics:    []string{},
+			Context:         []string{},
+			CustomData:      make(map[string]string),
+			ExpirationTime:  24 * time.Hour, // Default to 24 hours
+		}
+	}
+
+	// Store recent conversation context
+	memory := conversationMemory[mobName][playerName]
+	memory.LastInteraction = time.Now()
+
+	// Store the most important parts of the conversation context
+	if len(conv.Context) > 0 {
+		// Store last few interactions as context
+		maxContextItems := 3
+		if len(conv.Context) <= maxContextItems*2 {
+			memory.Context = conv.Context
+		} else {
+			// Keep only the most recent items
+			memory.Context = conv.Context[len(conv.Context)-(maxContextItems*2):]
+		}
+	}
+
+	// Extract potential topics from conversation
+	for _, message := range conv.Context {
+		// Simple topic extraction - just store the first few words of player messages
+		if strings.HasPrefix(message, "Player: ") {
+			content := strings.TrimPrefix(message, "Player: ")
+			words := strings.Fields(content)
+			if len(words) > 3 {
+				words = words[:3]
+			}
+			topic := strings.Join(words, " ")
+
+			// Add to recent topics if not already present
+			topicExists := false
+			for _, existingTopic := range memory.RecentTopics {
+				if existingTopic == topic {
+					topicExists = true
+					break
+				}
+			}
+
+			if !topicExists {
+				memory.RecentTopics = append(memory.RecentTopics, topic)
+				// Keep only the 5 most recent topics
+				if len(memory.RecentTopics) > 5 {
+					memory.RecentTopics = memory.RecentTopics[len(memory.RecentTopics)-5:]
+				}
+			}
+		}
+	}
+}
+
+// Get conversation memory for a specific NPC-player pair
+func getConversationMemory(mobName, playerName string) *ConversationMemory {
+	memoryMutex.RLock()
+	defer memoryMutex.RUnlock()
+
+	mobName = strings.ToLower(mobName)
+	playerName = strings.ToLower(playerName)
+
+	// Check if memory exists and hasn't expired
+	if mobMemory, ok := conversationMemory[mobName]; ok {
+		if memory, ok := mobMemory[playerName]; ok {
+			// Check if memory has expired
+			if time.Since(memory.LastInteraction) > memory.ExpirationTime {
+				return nil
+			}
+			return memory
+		}
+	}
+
+	return nil
+}
+
+// CleanupMemory periodically removes expired conversation memories
+func cleanupMemory() {
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-shutdownChan:
+			return
+		case <-ticker.C:
+			memoryMutex.Lock()
+			now := time.Now()
+
+			// Count before cleanup
+			totalBefore := 0
+			for _, playerMap := range conversationMemory {
+				totalBefore += len(playerMap)
+			}
+
+			// Iterate through all memories and remove expired ones
+			for mobName, playerMap := range conversationMemory {
+				for playerName, memory := range playerMap {
+					if now.Sub(memory.LastInteraction) > memory.ExpirationTime {
+						delete(playerMap, playerName)
+					}
+				}
+
+				// If no more players for this mob, remove the mob entry
+				if len(conversationMemory[mobName]) == 0 {
+					delete(conversationMemory, mobName)
+				}
+			}
+
+			// Count after cleanup
+			totalAfter := 0
+			for _, playerMap := range conversationMemory {
+				totalAfter += len(playerMap)
+			}
+
+			if totalBefore > totalAfter {
+				mudlog.Debug("ConversationMemory", "cleanup", fmt.Sprintf("Removed %d expired conversation memories", totalBefore-totalAfter))
+			}
+
+			memoryMutex.Unlock()
+		}
+	}
 }

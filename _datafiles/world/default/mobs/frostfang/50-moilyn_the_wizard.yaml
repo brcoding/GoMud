@@ -4,6 +4,11 @@ itemdropchance: 2
 hostile: false
 groups: 
   - frostfang-npc
+nicknames:
+  - moilyn
+  - wizard
+  - mage
+  - shopkeeper
 idlecommands:
   - 'say type `list` to see what magical objects I have for sale'
 activitylevel: 10

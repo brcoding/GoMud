@@ -95,6 +95,66 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 				continue
 			}
 
+			// Check if participants are in the same room
+			var mob1RoomId, mob2RoomId int
+			if !conv.IsPlayer1 {
+				if mob1 := mobs.GetInstance(conv.MobInstanceId1); mob1 != nil {
+					mob1RoomId = mob1.Character.RoomId
+				}
+			} else {
+				if user := users.GetByUserId(conv.MobInstanceId1); user != nil {
+					mob1RoomId = user.Character.RoomId
+				}
+			}
+
+			if !conv.IsPlayer2 {
+				if mob2 := mobs.GetInstance(conv.MobInstanceId2); mob2 != nil {
+					mob2RoomId = mob2.Character.RoomId
+				}
+			} else {
+				if user := users.GetByUserId(conv.MobInstanceId2); user != nil {
+					mob2RoomId = user.Character.RoomId
+				}
+			}
+
+			// End conversation if participants are in different rooms or either participant is not found
+			if mob1RoomId == 0 || mob2RoomId == 0 || mob1RoomId != mob2RoomId {
+				mudlog.Debug("IdleMobs", "conversation_end", fmt.Sprintf("Conversation %d ended - participants in different rooms or participant not found", convId))
+
+				// Generate a farewell message if they were in the same room before
+				if mob1RoomId != 0 && mob2RoomId != 0 && mob1RoomId != mob2RoomId {
+					if !conv.IsPlayer1 {
+						if mob1 := mobs.GetInstance(conv.MobInstanceId1); mob1 != nil {
+							// Get farewell from conversation system
+							farewell, err := conversations.EndConversation(convId)
+							if err == nil && farewell != "" {
+								// Send the farewell message
+								room := rooms.LoadRoom(mob1.Character.RoomId)
+								if room != nil {
+									room.SendText(fmt.Sprintf(`<ansi fg="username">%s</ansi> says, "<ansi fg="saytext">%s</ansi>"`, mob1.Character.Name, farewell))
+								}
+							}
+						}
+					}
+				}
+
+				conversations.Destroy(convId)
+
+				// Clear conversation IDs from participants
+				if !conv.IsPlayer1 {
+					if mob1 := mobs.GetInstance(conv.MobInstanceId1); mob1 != nil {
+						mob1.SetConversation(0)
+					}
+				}
+				if !conv.IsPlayer2 {
+					if mob2 := mobs.GetInstance(conv.MobInstanceId2); mob2 != nil {
+						mob2.SetConversation(0)
+					}
+				}
+
+				continue
+			}
+
 			// GetNextActions now returns concrete mob instance IDs
 			mob1InstId, mob2InstId, actions := conversations.GetNextActions(convId)
 

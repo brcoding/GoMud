@@ -20,14 +20,6 @@ var lastResponseTime = make(map[int]time.Time)
 
 const responseCooldown = 5 * time.Second
 
-// Common nicknames and partial names for NPCs
-var npcNicknames = map[string][]string{
-	"elara":                {"lara", "el", "wise one", "mystic"},
-	"guard":                {"guards", "guardian", "watchman", "soldier"},
-	"captain of the guard": {"captain", "commander", "chief", "officer"},
-	"moilyn the wizard":    {"moilyn", "wizard", "mage", "shopkeeper"},
-}
-
 // findPotentialMatches returns a list of NPCs that could match the given name or nickname
 func findPotentialMatches(room *rooms.Room, name string) []*mobs.Mob {
 	var matches []*mobs.Mob
@@ -51,13 +43,21 @@ func findPotentialMatches(room *rooms.Room, name string) []*mobs.Mob {
 			if mob == nil {
 				continue
 			}
-			mobName := strings.ToLower(mob.Character.Name)
-			if nicknames, exists := npcNicknames[mobName]; exists {
-				for _, nickname := range nicknames {
-					if nickname == nameLower {
-						matches = append(matches, mob)
-						break
-					}
+
+			// Check if any of the mob's nicknames match
+			for _, nickname := range mob.Nicknames {
+				if strings.ToLower(nickname) == nameLower {
+					matches = append(matches, mob)
+					break
+				}
+			}
+
+			// Also do a partial name match for mobs without nicknames
+			if len(mob.Nicknames) == 0 {
+				mobName := strings.ToLower(mob.Character.Name)
+				// Check if name is part of the mob's name
+				if strings.Contains(mobName, nameLower) {
+					matches = append(matches, mob)
 				}
 			}
 		}
