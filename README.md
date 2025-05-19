@@ -85,7 +85,7 @@ Go provides a lot of terrific benefits such as:
 
 ## Custom Configuration
 
-To use the OpenAI API for LLM-powered help instead of local models:
+To use the OpenAI API for LLM-powered features instead of local models:
 
 1. Create a file named `_datafiles/config.custom.yaml` with your API configuration:
 
@@ -94,21 +94,37 @@ Integrations:
   LLM:
     Enabled: true
     Provider: "openai"
-    Model: "gpt-4.1-nano"
+    Model: "gpt-4.1-nano"  # Available models: gpt-3.5-turbo, gpt-4o, gpt-4.1-nano
     BaseURL: "https://api.openai.com/v1"
     Temperature: 0.7
+    MaxContextLength: 10   # Maximum number of context messages to include
   
   LLMHelp:
     Enabled: true
+    SystemPrompt: "You are a helpful MUD game assistant. Provide concise, accurate answers to player questions."
     EndpointURL: "https://api.openai.com/v1/chat/completions"
-    APIKey: "your-api-key-here"
-    Model: "gpt-4.1-nano"
-    SaveResponses: true
+    APIKey: "your-api-key-here"  # Your OpenAI API key
+    Model: "gpt-4.1-nano"        # Should match the model in LLM section above
+    TemplatePath: "templates/help"
+    SaveResponses: true          # Whether to save generated help responses as templates
 ```
 
 2. Replace `your-api-key-here` with your actual OpenAI API key.
 
-3. Set the CONFIG_PATH environment variable to point to your custom config:
+3. Understanding the configuration options:
+   - **LLM section**: Controls general LLM features like NPC conversations
+     - `Model`: Specify which OpenAI model to use (affects both capabilities and cost)
+     - `BaseURL`: The base URL for the OpenAI API (usually keep as default)
+     - `Temperature`: Controls randomness (0.0-1.0, higher = more creative/random)
+   
+   - **LLMHelp section**: Controls the help system specifically
+     - `SystemPrompt`: Instructions for the AI when answering help questions
+     - `EndpointURL`: The specific endpoint for chat completions
+     - `APIKey`: Your OpenAI authentication key
+     - `Model`: Which model to use for help responses
+     - `SaveResponses`: Whether to cache responses to reduce API usage
+
+4. Set the CONFIG_PATH environment variable to point to your custom config:
 
 ```bash
 # On Linux/Mac:
@@ -121,7 +137,7 @@ $env:CONFIG_PATH="_datafiles/config.custom.yaml"
 set CONFIG_PATH=_datafiles/config.custom.yaml
 ```
 
-4. Start the server with the environment variable set:
+5. Start the server with the environment variable set:
 
 ```bash
 # Run directly with the environment variable set
@@ -131,6 +147,11 @@ CONFIG_PATH=_datafiles/config.custom.yaml go run .
 go run .
 ```
 
-5. This file is automatically added to `.gitignore` to prevent committing your API key to the repository.
+6. This file is automatically added to `.gitignore` to prevent committing your API key to the repository.
+
+7. Token usage tracking:
+   - The system automatically tracks API usage per user
+   - Players can view their token usage with the `status` command
+   - Token costs are calculated based on the model used
 
 For more details on LLM configuration, see [docs/llm-help.md](docs/llm-help.md).

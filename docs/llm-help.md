@@ -56,6 +56,30 @@ The system is designed to work with any OpenAI-compatible API endpoint. This inc
    - GPT-3.5-turbo
    - GPT-4o
 
+   **OpenAI Configuration Example**:
+   ```yaml
+   Integrations:
+     LLM:
+       Enabled: true
+       Provider: "openai"
+       Model: "gpt-4.1-nano"
+       BaseURL: "https://api.openai.com/v1"  # OpenAI API base URL
+       Temperature: 0.7
+     
+     LLMHelp:
+       Enabled: true
+       EndpointURL: "https://api.openai.com/v1/chat/completions"  # OpenAI chat completions endpoint
+       APIKey: "your-api-key-here"  # Get from https://platform.openai.com/api-keys
+       Model: "gpt-4.1-nano"
+   ```
+
+   **Token Usage and Costs**:
+   - The system tracks API usage automatically (calls made, tokens used, cost)
+   - Different models have different pricing - see current OpenAI pricing at https://openai.com/pricing
+   - Sample costs (as of 2024):
+     - GPT-4.1-nano: $0.0003/1K input tokens, $0.0015/1K output tokens
+     - GPT-3.5-turbo: $0.0005/1K input tokens, $0.0015/1K output tokens
+
 2. **Local LLMs**: Run models locally using tools like:
    - [Ollama](https://ollama.ai)
    - [LocalAI](https://github.com/localai/localai)
