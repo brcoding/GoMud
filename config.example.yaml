@@ -1,0 +1,20 @@
+Integrations:
+  Discord:
+    WebhookUrl: "" # Optional Discord webhook URL
+  
+  LLM:
+    Enabled: false
+    Provider: "ollama"
+    Model: "llama3.3"
+    BaseURL: "http://localhost:11434"
+    Temperature: 0.7
+    MaxContextLength: 10
+  
+  LLMHelp:
+    Enabled: false
+    SystemPrompt: "You are a helpful MUD game assistant. Provide concise, accurate answers to player questions about game mechanics and commands. Keep responses under 500 words and focus on giving practical, accurate information."
+    EndpointURL: "http://localhost:11434/api/chat/completions" # For OpenAI-compatible API
+    APIKey: "" # API key if needed
+    Model: "llama3.3" # Default model
+    TemplatePath: "templates/help" # Path to store templates
+    SaveResponses: true # Whether to save responses as templates 

@@ -674,7 +674,14 @@ func ProcessPlayerInput(conversationId int, playerInput string) (string, error) 
 		}
 
 		// Generate the combined greeting + response
-		response := llm.GenerateResponse(prompt, context)
+		// Get player user ID if this is a player
+		var userId int
+		if conv.IsPlayer2 && conv.PlayerName2 != "" {
+			// Only track token usage if this is a player (not mob-to-mob)
+			userId = conv.MobInstanceId2 // Player's user ID
+		}
+
+		response := llm.GenerateResponse(prompt, context, userId)
 		if response.Error != nil {
 			// If LLM fails, fall back to static greeting
 			return conv.LLMConfig.Greeting, nil
@@ -691,7 +698,14 @@ func ProcessPlayerInput(conversationId int, playerInput string) (string, error) 
 	}
 
 	// For regular (non-first) messages, proceed as before
-	response := llm.GenerateResponse("Respond to the player's input in character, maintaining your personality and knowledge.", context)
+	// Get player user ID if this is a player
+	var userId int
+	if conv.IsPlayer2 && conv.PlayerName2 != "" {
+		// Only track token usage if this is a player (not mob-to-mob)
+		userId = conv.MobInstanceId2 // Player's user ID
+	}
+
+	response := llm.GenerateResponse("Respond to the player's input in character, maintaining your personality and knowledge.", context, userId)
 	if response.Error != nil {
 		return "", fmt.Errorf("failed to generate response: %v", response.Error)
 	}
@@ -733,7 +747,14 @@ func EndConversation(conversationId int) (string, error) {
 		return "", fmt.Errorf("failed to build farewell context: %v", err)
 	}
 
-	response := llm.GenerateResponse("The conversation is ending. Provide a natural farewell that matches your character.", context)
+	// Get player user ID if this is a player
+	var userId int
+	if conv.IsPlayer2 && conv.PlayerName2 != "" {
+		// Only track token usage if this is a player (not mob-to-mob)
+		userId = conv.MobInstanceId2 // Player's user ID
+	}
+
+	response := llm.GenerateResponse("The conversation is ending. Provide a natural farewell that matches your character.", context, userId)
 	if response.Error != nil {
 		return "", fmt.Errorf("failed to generate farewell: %v", response.Error)
 	}
@@ -798,7 +819,8 @@ func storeConversationMemory(conv *Conversation) {
 	// Get mob and player names
 	var mobName, playerName string
 	if !conv.IsPlayer1 {
-		if mob := mobinterfaces.GetInstance(conv.MobInstanceId1); mob != nil {
+		mob := mobinterfaces.GetInstance(conv.MobInstanceId1)
+		if mob != nil {
 			mobName = strings.ToLower(mob.GetName())
 		}
 	} else {
@@ -806,7 +828,8 @@ func storeConversationMemory(conv *Conversation) {
 	}
 
 	if !conv.IsPlayer2 {
-		if mob := mobinterfaces.GetInstance(conv.MobInstanceId2); mob != nil {
+		mob := mobinterfaces.GetInstance(conv.MobInstanceId2)
+		if mob != nil {
 			playerName = strings.ToLower(mob.GetName())
 		}
 	} else {

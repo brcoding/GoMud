@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/GoMudEngine/GoMud/internal/events"
+	"github.com/GoMudEngine/GoMud/internal/integrations/llm"
 	"github.com/GoMudEngine/GoMud/internal/rooms"
 	"github.com/GoMudEngine/GoMud/internal/templates"
 	"github.com/GoMudEngine/GoMud/internal/term"
@@ -107,6 +108,16 @@ func Status(rest string, user *users.UserRecord, room *rooms.Room, flags events.
 		user.SendText(tplTxt)
 
 		return true, nil
+	}
+
+	// Add LLM usage stats to the template data
+	tokenUsage := llm.GetTokenUsage(user.UserId)
+	if tokenUsage != nil {
+		user.SetTempData("LLMCalls", tokenUsage.TotalCalls)
+		user.SetTempData("LLMInputTokens", tokenUsage.InputTokens)
+		user.SetTempData("LLMOutputTokens", tokenUsage.OutputTokens)
+		user.SetTempData("LLMCost", tokenUsage.TotalCost)
+		user.SetTempData("LLMLastUsed", tokenUsage.LastUsed)
 	}
 
 	tplTxt, _ := templates.Process("character/status", user, user.UserId)
