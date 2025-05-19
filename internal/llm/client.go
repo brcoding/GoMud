@@ -405,6 +405,11 @@ func GetHelpResponse(query string, availableCommands []string, userId ...int) (s
 		return "", fmt.Errorf("LLM help system is not enabled")
 	}
 
+	// Check if the player has disabled LLM features
+	if len(userId) > 0 && userId[0] > 0 && IsLLMDisabledForPlayer(userId[0]) {
+		return "", fmt.Errorf("LLM features are disabled for this player")
+	}
+
 	// Create a formatted list of commands grouped by type
 	var commandsByType = make(map[string][]string)
 

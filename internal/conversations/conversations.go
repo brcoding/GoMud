@@ -69,26 +69,57 @@ func Shutdown() {
 
 // destroyConversation is the internal version that doesn't acquire the mutex
 func destroyConversation(conversationId int) {
-	if conv, ok := conversations[conversationId]; ok {
-		// Store conversation memory before destroying it
-		storeConversationMemory(conv)
+	conversationMutex.Lock()
+	conv, ok := conversations[conversationId]
+	conversationMutex.Unlock()
 
-		// Only clear conversation IDs from mob instances, not from players
-		if !conv.IsPlayer1 {
-			if mob1 := mobinterfaces.GetInstance(conv.MobInstanceId1); mob1 != nil {
-				mob1.SetConversation(0)
-			}
-		}
-		if !conv.IsPlayer2 {
-			if mob2 := mobinterfaces.GetInstance(conv.MobInstanceId2); mob2 != nil {
-				mob2.SetConversation(0)
-			}
-		}
-		conversationMutex.Lock()
-		delete(conversations, conversationId)
-		conversationMutex.Unlock()
-		mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Destroyed conversation %d", conversationId))
+	if !ok || conv == nil {
+		mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Conversation %d not found or nil", conversationId))
+		return
 	}
+
+	// Check if conversation is valid before storing memory
+	if conv.MobInstanceId1 > 0 || conv.MobInstanceId2 > 0 {
+		// Store conversation memory before destroying it
+		// This is a separate function that has its own safety checks
+		storeConversationMemory(conv)
+	}
+
+	// Only clear conversation IDs from mob instances, not from players
+	if !conv.IsPlayer1 && conv.MobInstanceId1 > 0 {
+		mob1Interface := mobinterfaces.GetInstance(conv.MobInstanceId1)
+		if mob1Interface != nil {
+			// Check if the interface contains a nil concrete value
+			mob1, ok := mob1Interface.(*mobs.Mob)
+			if ok && mob1 != nil {
+				mob1.SetConversation(0)
+			} else {
+				mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob1 instance %d has invalid type or nil value, cannot SetConversation", conv.MobInstanceId1))
+			}
+		} else {
+			mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob1 instance %d not found, cannot SetConversation", conv.MobInstanceId1))
+		}
+	}
+	if !conv.IsPlayer2 && conv.MobInstanceId2 > 0 {
+		mob2Interface := mobinterfaces.GetInstance(conv.MobInstanceId2)
+		if mob2Interface != nil {
+			// Check if the interface contains a nil concrete value
+			mob2, ok := mob2Interface.(*mobs.Mob)
+			if ok && mob2 != nil {
+				mob2.SetConversation(0)
+			} else {
+				mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob2 instance %d has invalid type or nil value, cannot SetConversation", conv.MobInstanceId2))
+			}
+		} else {
+			mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob2 instance %d not found, cannot SetConversation", conv.MobInstanceId2))
+		}
+	}
+
+	conversationMutex.Lock()
+	delete(conversations, conversationId)
+	conversationMutex.Unlock()
+
+	mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Destroyed conversation %d", conversationId))
 }
 
 // Destroy is the public version that safely destroys a conversation
@@ -818,26 +849,76 @@ func storeConversationMemory(conv *Conversation) {
 
 	// Get mob and player names
 	var mobName, playerName string
+
+	// First participant (mob1 or player1)
 	if !conv.IsPlayer1 {
-		mob := mobinterfaces.GetInstance(conv.MobInstanceId1)
-		if mob != nil {
-			mobName = strings.ToLower(mob.GetName())
+		// If it's a mob, try to get its name safely
+		mobInterface := mobinterfaces.GetInstance(conv.MobInstanceId1)
+		if mobInterface == nil {
+			mudlog.Debug("ConversationMemory", "skip", fmt.Sprintf("Mob1 instance %d not found, skipping memory storage", conv.MobInstanceId1))
+			return // Mob no longer exists
 		}
+
+		// Check if the interface contains a nil concrete value
+		mob, ok := mobInterface.(*mobs.Mob)
+		if !ok || mob == nil {
+			mudlog.Debug("ConversationMemory", "skip", fmt.Sprintf("Mob1 instance %d has invalid type or nil value", conv.MobInstanceId1))
+			return
+		}
+
+		// Extra safety check - get the name before using it
+		name := mob.GetName()
+		if name == "" {
+			mudlog.Debug("ConversationMemory", "skip", "Mob1 has empty name, skipping memory storage")
+			return
+		}
+
+		mobName = strings.ToLower(name)
 	} else {
+		// It's a player, use the stored name
+		if conv.PlayerName1 == "" {
+			mudlog.Debug("ConversationMemory", "skip", "Player1 has empty name, skipping memory storage")
+			return
+		}
 		mobName = strings.ToLower(conv.PlayerName1)
 	}
 
+	// Second participant (mob2 or player2)
 	if !conv.IsPlayer2 {
-		mob := mobinterfaces.GetInstance(conv.MobInstanceId2)
-		if mob != nil {
-			playerName = strings.ToLower(mob.GetName())
+		// If it's a mob, try to get its name safely
+		mobInterface := mobinterfaces.GetInstance(conv.MobInstanceId2)
+		if mobInterface == nil {
+			mudlog.Debug("ConversationMemory", "skip", fmt.Sprintf("Mob2 instance %d not found, skipping memory storage", conv.MobInstanceId2))
+			return // Mob no longer exists
 		}
+
+		// Check if the interface contains a nil concrete value
+		mob, ok := mobInterface.(*mobs.Mob)
+		if !ok || mob == nil {
+			mudlog.Debug("ConversationMemory", "skip", fmt.Sprintf("Mob2 instance %d has invalid type or nil value", conv.MobInstanceId2))
+			return
+		}
+
+		// Extra safety check - get the name before using it
+		name := mob.GetName()
+		if name == "" {
+			mudlog.Debug("ConversationMemory", "skip", "Mob2 has empty name, skipping memory storage")
+			return
+		}
+
+		playerName = strings.ToLower(name)
 	} else {
+		// It's a player, use the stored name
+		if conv.PlayerName2 == "" {
+			mudlog.Debug("ConversationMemory", "skip", "Player2 has empty name, skipping memory storage")
+			return
+		}
 		playerName = strings.ToLower(conv.PlayerName2)
 	}
 
-	// Ensure we have valid names
+	// Ensure we have valid names before proceeding
 	if mobName == "" || playerName == "" {
+		mudlog.Debug("ConversationMemory", "skip", "Either mob or player name is empty, skipping memory storage")
 		return
 	}
 

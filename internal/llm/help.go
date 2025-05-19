@@ -10,6 +10,7 @@ import (
 	"github.com/GoMudEngine/GoMud/internal/configs"
 	"github.com/GoMudEngine/GoMud/internal/mudlog"
 	"github.com/GoMudEngine/GoMud/internal/templates"
+	"github.com/GoMudEngine/GoMud/internal/users"
 )
 
 // Configuration for the LLM-based help system
@@ -111,6 +112,18 @@ func sanitizeFilename(query string) string {
 	}
 
 	return name
+}
+
+// IsLLMDisabledForPlayer checks if the player has disabled LLM features for themselves
+func IsLLMDisabledForPlayer(userId int) bool {
+	// Get the player's character
+	player := users.GetByUserId(userId)
+	if player == nil || player.Character == nil {
+		return false // Default to enabled if can't find character
+	}
+
+	// Check if the player has disabled LLM features
+	return player.Character.GetSetting("llm_disabled") == "true"
 }
 
 // IsHelpTemplateAvailable checks if a help template exists for the given query

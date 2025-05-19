@@ -44,6 +44,7 @@ var (
 
 	userCommands map[string]CommandAccess = map[string]CommandAccess{
 		`aid`:         {Aid, false, false},
+		`ai`:          {AI, true, false}, // New command to toggle AI/LLM features
 		`alias`:       {Alias, true, false},
 		`appraise`:    {Appraise, false, false},
 		`ask`:         {Ask, false, false},

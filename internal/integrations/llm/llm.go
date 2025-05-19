@@ -12,6 +12,7 @@ import (
 
 	"github.com/GoMudEngine/GoMud/internal/configs"
 	"github.com/GoMudEngine/GoMud/internal/mudlog"
+	"github.com/GoMudEngine/GoMud/internal/users"
 )
 
 var (
@@ -62,6 +63,17 @@ func GenerateResponse(prompt string, context []string, userId ...int) LLMRespons
 	if !bool(config.Enabled) {
 		mudlog.Error("LLM", "error", "LLM integration is disabled")
 		return LLMResponse{Error: fmt.Errorf("LLM integration is disabled")}
+	}
+
+	// Check if the player has disabled LLM features
+	if len(userId) > 0 && userId[0] > 0 {
+		// Use the users package to get the player and check settings
+		if player := users.GetByUserId(userId[0]); player != nil && player.Character != nil {
+			if player.Character.GetSetting("llm_disabled") == "true" {
+				mudlog.Info("LLM", "info", fmt.Sprintf("User %d has disabled LLM features", userId[0]))
+				return LLMResponse{Error: fmt.Errorf("LLM features are disabled for this player")}
+			}
+		}
 	}
 
 	mudlog.Info("LLM", "request", fmt.Sprintf("Sending request to LLM with model %s", config.Model))
