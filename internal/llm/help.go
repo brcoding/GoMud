@@ -49,6 +49,9 @@ func InitHelpLLM() {
 	if helpLLMConfig.TemplatePath == "" {
 		helpLLMConfig.TemplatePath = "templates/help"
 	}
+
+	// Also initialize the shared LLM config
+	globalConfig.SystemPrompt = helpLLMConfig.SystemPrompt
 }
 
 // saveHelpResponse saves the LLM's response as a template file

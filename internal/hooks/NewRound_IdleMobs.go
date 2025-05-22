@@ -80,7 +80,7 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 		}
 
 		if mob.InConversation() {
-			mudlog.Debug("IdleMobs", "info", fmt.Sprintf("mob %s (#%d) inConversation with ID: %d", mob.GetName(), mob.GetInstanceId(), mob.GetConversationId()))
+			// mudlog.Debug("IdleMobs", "info", fmt.Sprintf("mob %s (#%d) inConversation with ID: %d", mob.GetName(), mob.GetInstanceId(), mob.GetConversationId()))
 			convId := mob.GetConversationId()
 			if convId == 0 {
 				mudlog.Error("IdleMobs", "error", fmt.Sprintf("Mob %s (#%d) InConversation() is true but GetConversationId() is 0", mob.GetName(), mob.GetInstanceId()))
@@ -119,7 +119,6 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 
 			// End conversation if participants are in different rooms or either participant is not found
 			if mob1RoomId == 0 || mob2RoomId == 0 || mob1RoomId != mob2RoomId {
-				mudlog.Debug("IdleMobs", "conversation_end", fmt.Sprintf("Conversation %d ended - participants in different rooms or participant not found", convId))
 
 				// Generate a farewell message if they were in the same room before
 				if mob1RoomId != 0 && mob2RoomId != 0 && mob1RoomId != mob2RoomId {
@@ -230,8 +229,6 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 
 						if targetPrefix == `#1 ` {
 							if !conv.IsPlayer1 && mob1 != nil {
-								// Mob1 speaking
-								mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Mob1 (%s #%d) executing: %s", mob1.GetName(), mob1.GetInstanceId(), cmd))
 								// Execute the command - the event system will handle room output
 								if strings.HasPrefix(cmd, "sayto") {
 									// For sayto commands, we need to ensure the target is properly set
@@ -263,14 +260,11 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 							} else if conv.IsPlayer1 {
 								// Player1 speaking
 								if user := users.GetByUserId(mob1InstId); user != nil {
-									mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Player1 (%s #%d) executing: %s", user.Character.Name, user.UserId, cmd))
 									user.Command(cmd)
 								}
 							}
 						} else if targetPrefix == `#2 ` {
 							if !conv.IsPlayer2 && mob2 != nil {
-								// Mob2 speaking
-								mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Mob2 (%s #%d) executing: %s", mob2.GetName(), mob2.GetInstanceId(), cmd))
 								// Execute the command - the event system will handle room output
 								if strings.HasPrefix(cmd, "sayto") {
 									// For sayto commands, we need to ensure the target is properly set
@@ -302,7 +296,6 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 							} else if conv.IsPlayer2 {
 								// Player2 speaking
 								if user := users.GetByUserId(mob2InstId); user != nil {
-									mudlog.Debug("IdleMobs", "conversation_action", fmt.Sprintf("Player2 (%s #%d) executing: %s", user.Character.Name, user.UserId, cmd))
 									user.Command(cmd)
 								}
 							}
@@ -314,7 +307,6 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 
 				// After executing actions, check if conversation is complete
 				if conversations.IsComplete(convId) {
-					mudlog.Debug("IdleMobs", "info", fmt.Sprintf("Conversation %d complete after actions, destroying", convId))
 					// Explicitly destroy the conversation to ensure cleanup
 					conversations.Destroy(convId)
 					// Clear conversation IDs from participants and unblock player input
@@ -326,7 +318,6 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 						// Unblock player input if they were in the conversation
 						if user := users.GetByUserId(mob1InstId); user != nil {
 							user.UnblockInput()
-							mudlog.Debug("IdleMobs", "cleanup", fmt.Sprintf("Unblocked input for player %s (ID: %d)", user.Character.Name, user.UserId))
 						}
 					}
 					if !conv.IsPlayer2 {
@@ -337,7 +328,6 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 						// Unblock player input if they were in the conversation
 						if user := users.GetByUserId(mob2InstId); user != nil {
 							user.UnblockInput()
-							mudlog.Debug("IdleMobs", "cleanup", fmt.Sprintf("Unblocked input for player %s (ID: %d)", user.Character.Name, user.UserId))
 						}
 					}
 					continue // Skip the IsComplete check below since we just handled it
@@ -345,9 +335,9 @@ func IdleMobs(e events.Event) events.ListenerReturn {
 			}
 
 			// Only check IsComplete if we haven't already destroyed the conversation
-			if !conversations.IsComplete(convId) {
-				mudlog.Debug("IdleMobs", "info", fmt.Sprintf("Conversation %d still active for mob %s (#%d)", convId, mob.GetName(), mob.GetInstanceId()))
-			}
+			// if !conversations.IsComplete(convId) {
+			// 	mudlog.Debug("IdleMobs", "info", fmt.Sprintf("Conversation %d still active for mob %s (#%d)", convId, mob.GetName(), mob.GetInstanceId()))
+			// }
 			continue // Processed conversation, skip other idle actions for this mob
 		}
 

@@ -19,7 +19,7 @@ character:
     the balance of the world, swiftly and decisively.
   adjectives:
   - zombie
-  roomid: 2
+  roomid: 59
   zone: Frostfang
   raceid: 2
   stats:
@@ -65,18 +65,16 @@ character:
     list:
     - buffid: 28
       permabuff: true
-      roundcounter: 3
+      roundcounter: 23
       triggersleft: 1000000000
     - buffid: 29
       permabuff: true
-      roundcounter: 11
+      roundcounter: 31
       triggersleft: 1000000000
     - buffid: 39
       permabuff: true
+      roundcounter: 5
       triggersleft: 1000000000
-    - buffid: 32
-      roundcounter: 79
-      triggersleft: 1
   equipment:
     weapon:
       itemid: 10004

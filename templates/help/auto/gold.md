@@ -1,0 +1,2 @@
+.:</ansi> <ansi magenta-bold>Help for </ansi><ansi command>gold</ansi>
+This list does not include a specific command called <ansi>gold</ansi>. If you're referring to managing or viewing your in-game currency, you might want to check your inventory or bank, or use commands like <ansi>inventory</ansi> or <ansi>bank</ansi>. If you need further assistance, please specify what you'd like to do with gold.

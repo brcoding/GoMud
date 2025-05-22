@@ -24,7 +24,7 @@ func Shout(rest string, mob *mobs.Mob, room *rooms.Room) (bool, error) {
 	for _, roomInfo := range room.Exits {
 		if otherRoom := rooms.LoadRoom(roomInfo.RoomId); otherRoom != nil {
 			if sourceExit := otherRoom.FindExitTo(room.RoomId); sourceExit != `` {
-				otherRoom.SendText(fmt.Sprintf(`Someone is shouting from the <ansi fg="exit">%s</ansi> direction.`, sourceExit))
+				otherRoom.SendText(fmt.Sprintf(`Someone shouts "<ansi fg="saytext-mob">%s</ansi>" from the <ansi fg="exit">%s</ansi> direction.`, rest, sourceExit))
 			}
 		}
 	}

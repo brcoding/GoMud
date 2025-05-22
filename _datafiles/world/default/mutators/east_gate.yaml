@@ -1,0 +1,16 @@
+name: east_gate
+description: Controls the state of the East Gate in Frostfang, locking it at night
+script: east_gate_control
+decayrate: sunrise
+respawnrate: sunset
+rooms:
+  - roomid: 60
+    exits:
+      west:
+        roomid: 59
+        lock:
+          difficulty: 100
+          locked: true
+          message: The gate is securely locked for the night. The guard will evaluate your request to enter.
+          trapbuffids: []
+mutatorid: east_gate

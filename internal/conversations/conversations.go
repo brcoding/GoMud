@@ -74,7 +74,6 @@ func destroyConversation(conversationId int) {
 	conversationMutex.Unlock()
 
 	if !ok || conv == nil {
-		mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Conversation %d not found or nil", conversationId))
 		return
 	}
 
@@ -93,11 +92,7 @@ func destroyConversation(conversationId int) {
 			mob1, ok := mob1Interface.(*mobs.Mob)
 			if ok && mob1 != nil {
 				mob1.SetConversation(0)
-			} else {
-				mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob1 instance %d has invalid type or nil value, cannot SetConversation", conv.MobInstanceId1))
 			}
-		} else {
-			mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob1 instance %d not found, cannot SetConversation", conv.MobInstanceId1))
 		}
 	}
 	if !conv.IsPlayer2 && conv.MobInstanceId2 > 0 {
@@ -107,19 +102,13 @@ func destroyConversation(conversationId int) {
 			mob2, ok := mob2Interface.(*mobs.Mob)
 			if ok && mob2 != nil {
 				mob2.SetConversation(0)
-			} else {
-				mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob2 instance %d has invalid type or nil value, cannot SetConversation", conv.MobInstanceId2))
 			}
-		} else {
-			mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Mob2 instance %d not found, cannot SetConversation", conv.MobInstanceId2))
 		}
 	}
 
 	conversationMutex.Lock()
 	delete(conversations, conversationId)
 	conversationMutex.Unlock()
-
-	mudlog.Debug("Conversation", "cleanup", fmt.Sprintf("Destroyed conversation %d", conversationId))
 }
 
 // Destroy is the public version that safely destroys a conversation
@@ -166,8 +155,6 @@ type Conversation struct {
 
 // Returns a non empty ConversationId if successful
 func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorName string, participantInstanceId int, participantName string, zone string, forceIndex ...int) int {
-	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("initiatorMobId: %v, initatorInstanceId: %v, initiatorName: %v, participantInstanceId: %v, participantName: %v, zone: %v, forceIndex: %v",
-		initiatorMobId, initatorInstanceId, initiatorName, participantInstanceId, participantName, zone, forceIndex))
 	conversationMutex.Lock()
 	defer conversationMutex.Unlock()
 
@@ -176,16 +163,12 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 	isPlayer1 := false
 	if mob1Interface == nil {
 		isPlayer1 = true
-		mudlog.Debug("AttemptConversation", "info", fmt.Sprintf("Initiator %s (ID: %d) is a player", initiatorName, initatorInstanceId))
-	} else {
-		mudlog.Debug("AttemptConversation", "info", fmt.Sprintf("Initiator %s (ID: %d) is a mob", initiatorName, initatorInstanceId))
 	}
 
 	// First check if participant is a player
 	isPlayer2 := false
 	if user := users.GetByUserId(participantInstanceId); user != nil {
 		isPlayer2 = true
-		mudlog.Debug("AttemptConversation", "info", fmt.Sprintf("Participant %s (ID: %d) is a player", participantName, participantInstanceId))
 	} else {
 		// If not a player, check if it's a mob
 		mob2Interface := mobinterfaces.GetInstance(participantInstanceId)
@@ -193,7 +176,6 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 			mudlog.Error("Conversation", "error", fmt.Sprintf("Invalid participant ID %d - neither a mob nor a player", participantInstanceId))
 			return 0
 		}
-		mudlog.Debug("AttemptConversation", "info", fmt.Sprintf("Participant %s (ID: %d) is a mob", participantName, participantInstanceId))
 	}
 
 	// At least one participant must be a mob
@@ -233,9 +215,6 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 		mob2Name = strings.ToLower(participantName)
 	}
 
-	mudlog.Debug("AttemptConversation", "info", fmt.Sprintf("Participant types - Mob1: %v (name: %s), Mob2: %v (name: %s)",
-		!isPlayer1, mob1Name, !isPlayer2, mob2Name))
-
 	zone = ZoneNameSanitize(zone)
 
 	convFolder := string(configs.GetFilePathsConfig().DataFiles) + `/conversations`
@@ -263,8 +242,6 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 		return 0
 	}
 
-	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("dataFile: %v", dataFile))
-
 	// Validate that the conversation is supported
 	supported := false
 	if supportedNames, ok := dataFile.Supported[initiatorName]; ok {
@@ -276,7 +253,6 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 		}
 	}
 	if !supported {
-		mudlog.Debug("AttemptConversation()", "info", "Conversation not supported between these participants")
 		return 0
 	}
 
@@ -313,7 +289,7 @@ func AttemptConversation(initiatorMobId int, initatorInstanceId int, initiatorNa
 		Active:         true,
 	}
 
-	mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("Created dynamic conversation: %+v", conversations[conversationUniqueId]))
+	// mudlog.Debug("AttemptConversation()", "info", fmt.Sprintf("Created dynamic conversation: %+v", conversations[conversationUniqueId]))
 
 	// Check for previous conversation memory and incorporate it
 	var memory *ConversationMemory
@@ -383,12 +359,9 @@ func GetNextActions(convId int) (mob1Id int, mob2Id int, actions []string) {
 	// Defer RUnlock now that we know 'c' is valid
 	defer conversationMutex.RUnlock()
 
-	mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Getting next actions for conversation %d", convId))
-
 	// First validation pass - we only care if it's valid, not the mob instances
 	_, _, valid := c.validateMobInstances()
 	if !valid {
-		mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Initial validation failed for conversation %d", convId))
 		return 0, 0, []string{}
 	}
 
@@ -414,10 +387,8 @@ func GetNextActions(convId int) (mob1Id int, mob2Id int, actions []string) {
 			go func() { Destroy(convId) }()
 			return 0, 0, []string{}
 		}
-		mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Mob1 revalidated successfully: %s (ID: %d)", mob1Concrete.GetName(), id1))
 	} else {
 		id1 = c.MobInstanceId1
-		mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Using player1 ID: %d", id1))
 	}
 
 	if !c.IsPlayer2 {
@@ -440,10 +411,8 @@ func GetNextActions(convId int) (mob1Id int, mob2Id int, actions []string) {
 			go func() { Destroy(convId) }()
 			return 0, 0, []string{}
 		}
-		mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Mob2 revalidated successfully: %s (ID: %d)", mob2Concrete.GetName(), id2))
 	} else {
 		id2 = c.MobInstanceId2
-		mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Using player2 ID: %d", id2))
 	}
 
 	// Get next actions - for dynamic conversations, we don't rely on a fixed sequence
@@ -453,7 +422,6 @@ func GetNextActions(convId int) (mob1Id int, mob2Id int, actions []string) {
 		return id1, id2, []string{}
 	}
 
-	mudlog.Debug("Conversation", "GetNextActions", fmt.Sprintf("Returning %d actions for conversation %d", len(na), convId))
 	return id1, id2, na
 }
 
@@ -503,14 +471,11 @@ func (c *Conversation) validateMobInstances() (mob1 *mobs.Mob, mob2 *mobs.Mob, v
 	case <-shutdownChan:
 		return nil, nil, false
 	default:
-		mudlog.Debug("Conversation", "validate", fmt.Sprintf("Validating conversation %d: Mob1(ID:%d, IsPlayer:%v), Mob2(ID:%d, IsPlayer:%v)",
-			c.Id, c.MobInstanceId1, c.IsPlayer1, c.MobInstanceId2, c.IsPlayer2))
 
 		// Handle mob1
 		var mob1Interface mobinterfaces.MobInterface
 		if !c.IsPlayer1 {
 			mob1Interface = mobinterfaces.GetInstance(c.MobInstanceId1)
-			mudlog.Debug("Conversation", "validate", fmt.Sprintf("Mob1 instance lookup: ID=%d, Found=%v", c.MobInstanceId1, mob1Interface != nil))
 
 			if mob1Interface == nil {
 				mudlog.Error("Conversation", "error", fmt.Sprintf("Mob1 instance not found in conversation %d (ID: %d)", c.Id, c.MobInstanceId1))
@@ -525,14 +490,12 @@ func (c *Conversation) validateMobInstances() (mob1 *mobs.Mob, mob2 *mobs.Mob, v
 				return nil, nil, false
 			}
 			mob1 = mob1Concrete
-			mudlog.Debug("Conversation", "validate", fmt.Sprintf("Mob1 validated: %s", mob1.GetName()))
 		}
 
 		// Handle mob2
 		var mob2Interface mobinterfaces.MobInterface
 		if !c.IsPlayer2 {
 			mob2Interface = mobinterfaces.GetInstance(c.MobInstanceId2)
-			mudlog.Debug("Conversation", "validate", fmt.Sprintf("Mob2 instance lookup: ID=%d, Found=%v", c.MobInstanceId2, mob2Interface != nil))
 
 			if mob2Interface == nil {
 				mudlog.Error("Conversation", "error", fmt.Sprintf("Mob2 instance not found in conversation %d (ID: %d)", c.Id, c.MobInstanceId2))
@@ -547,7 +510,6 @@ func (c *Conversation) validateMobInstances() (mob1 *mobs.Mob, mob2 *mobs.Mob, v
 				return nil, nil, false
 			}
 			mob2 = mob2Concrete
-			mudlog.Debug("Conversation", "validate", fmt.Sprintf("Mob2 validated: %s", mob2.GetName()))
 		}
 
 		// Verify names for mobs
@@ -558,7 +520,6 @@ func (c *Conversation) validateMobInstances() (mob1 *mobs.Mob, mob2 *mobs.Mob, v
 				go func() { Destroy(c.Id) }()
 				return nil, nil, false
 			}
-			mudlog.Debug("Conversation", "validate", fmt.Sprintf("Mob1 name verified: %s", name))
 		}
 
 		if mob2 != nil {
@@ -568,10 +529,8 @@ func (c *Conversation) validateMobInstances() (mob1 *mobs.Mob, mob2 *mobs.Mob, v
 				go func() { Destroy(c.Id) }()
 				return nil, nil, false
 			}
-			mudlog.Debug("Conversation", "validate", fmt.Sprintf("Mob2 name verified: %s", name))
 		}
 
-		mudlog.Debug("Conversation", "validate", fmt.Sprintf("Conversation %d validation successful", c.Id))
 		return mob1, mob2, true
 	}
 }

@@ -30,10 +30,11 @@ import (
 	"github.com/GoMudEngine/GoMud/internal/hooks"
 	"github.com/GoMudEngine/GoMud/internal/inputhandlers"
 	"github.com/GoMudEngine/GoMud/internal/integrations/discord"
-	"github.com/GoMudEngine/GoMud/internal/integrations/llm"
+	intllm "github.com/GoMudEngine/GoMud/internal/integrations/llm"
 	"github.com/GoMudEngine/GoMud/internal/items"
 	"github.com/GoMudEngine/GoMud/internal/keywords"
 	"github.com/GoMudEngine/GoMud/internal/language"
+	"github.com/GoMudEngine/GoMud/internal/llm"
 	"github.com/GoMudEngine/GoMud/internal/usercommands"
 	"github.com/gorilla/websocket"
 
@@ -174,7 +175,9 @@ func main() {
 
 	// LLM integration
 	if bool(c.Integrations.LLM.Enabled) {
-		llm.Init()
+		intllm.Init()
+		// Initialize the unified LLM service
+		llm.SetupLLMSystem()
 		mudlog.Info("LLM", "info", "integration is enabled")
 	} else {
 		mudlog.Warn("LLM", "info", "integration is disabled")

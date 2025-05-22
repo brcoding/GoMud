@@ -1,0 +1,32 @@
+mobid: 64
+zone: Frostfang
+itemdropchance: 5
+hostile: true
+maxwander: 6
+groups:
+  - riffraff
+  - mimics
+idlecommands:
+  - 'emote glints in the light'
+  - 'emote lies perfectly still'
+  - 'wander'
+activitylevel: 8
+character:
+  name: coiner
+  description: 'At first glance, this appears to be a single gold coin lying on the ground. However, upon closer inspection, the coin reveals itself to be a small, metallic creature with a coin-like body. Its surface shimmers with a golden hue, and it has tiny, beady eyes that watch intently for potential victims. When threatened, the creature unfurls its body, revealing sharp, metallic appendages that it uses to attack.'
+  level: 2
+  raceid: 18
+  alignment: -50
+  gold: 1
+  stats:
+    vitality:
+      base: 2
+    strength:
+      base: 2
+    dexterity:
+      base: 3
+    perception:
+      base: 4
+  equipment:
+    body:
+      itemid: 20001 

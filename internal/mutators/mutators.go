@@ -38,7 +38,7 @@ func (tb TextBehavior) IsValid() bool {
 type MutatorList []Mutator
 
 type Mutator struct {
-	MutatorId      string `yaml:"mutatorid,omitempty"`      // Short text that will uniquely identify this modifier ("dusty")
+	MutatorId      string `yaml:"mutatorid"`                // Short text that will uniquely identify this modifier ("dusty")
 	SpawnedRound   uint64 `yaml:"spawnedround,omitempty"`   // Tracks when this mutator was created (useful for decay)
 	DespawnedRound uint64 `yaml:"despawnedround,omitempty"` // Track when it decayed to nothing.
 }
@@ -185,7 +185,8 @@ func (ml *MutatorList) Update(roundNow uint64) {
 	removeIdx := []int{}
 	for idx := range *ml {
 		(*ml)[idx].Update(roundNow)
-		if (*ml)[idx].Removable() {
+		isRemovable := (*ml)[idx].Removable()
+		if isRemovable {
 			removeIdx = append(removeIdx, idx)
 		}
 	}
@@ -217,6 +218,10 @@ func (m *Mutator) Removable() bool {
 	if m.Live() {
 		return false
 	}
+	// If there is no spec found, it's invalid and can be removed safely.
+	if m.GetSpec() == nil {
+		return true
+	}
 	// If it might respawn, don't remove
 	if m.GetSpec().RespawnRate != `` {
 		return false
@@ -226,13 +231,23 @@ func (m *Mutator) Removable() bool {
 }
 
 func (m *Mutator) GetSpec() *MutatorSpec {
-	return allMutators[m.MutatorId]
+	key := strings.TrimSpace(m.MutatorId)
+	return allMutators[key]
 }
 
 // Checks whether it decays or respawns
 // Returns true if it has changed somehow?
 func (m *Mutator) Update(currentRound uint64) {
 	spec := m.GetSpec()
+
+	// If we cannot find a spec for this mutator id, mark it for removal and abort to prevent panics.
+	if spec == nil {
+		// Log once for visibility but do not crash the server.
+		mudlog.Warn("Mutator.Update", "Missing MutatorSpec for id", "mutatorId", m.MutatorId)
+		// Immediately mark despawn so List can remove it on next cleanup.
+		m.DespawnedRound = currentRound
+		return
+	}
 
 	//
 	// If it hasn't been initialized yet
