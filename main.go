@@ -319,6 +319,14 @@ func main() {
 		}
 	}()
 
+	// Make sure token usage is saved to player files
+	for _, player := range users.GetAllActiveUsers() {
+		if tokenUsage := llm.GetTokenUsage(player.UserId); tokenUsage != nil {
+			mudlog.Info("Shutdown", "save_token_usage", fmt.Sprintf("Saving LLM token usage for %s: %d calls, %d tokens",
+				player.Username, tokenUsage.TotalCalls, tokenUsage.InputTokens+tokenUsage.OutputTokens))
+		}
+	}
+
 	// Close the channel, signalling to the worker threads to shutdown.
 	close(workerShutdownChan)
 
