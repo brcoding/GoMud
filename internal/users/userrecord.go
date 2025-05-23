@@ -387,6 +387,16 @@ func (u *UserRecord) SetTempData(key string, value any) {
 		return
 	}
 	u.tempDataStore[key] = value
+
+	// Special handling for LLM usage data to ensure it's persisted
+	if key == "LLMUsage" {
+		// Make sure ConfigOptions exists
+		if u.ConfigOptions == nil {
+			u.ConfigOptions = make(map[string]any)
+		}
+		// Store LLM usage in the persistent ConfigOptions map
+		u.ConfigOptions["LLMUsage"] = value
+	}
 }
 
 func (u *UserRecord) GetTempData(key string) any {
@@ -395,9 +405,20 @@ func (u *UserRecord) GetTempData(key string) any {
 		u.tempDataStore = make(map[string]any)
 	}
 
+	// First try to get from temp data store
 	if value, ok := u.tempDataStore[key]; ok {
 		return value
 	}
+
+	// Special handling for LLM usage - also check ConfigOptions
+	if key == "LLMUsage" && u.ConfigOptions != nil {
+		if value, ok := u.ConfigOptions["LLMUsage"]; ok {
+			// Copy it to tempDataStore for future access
+			u.tempDataStore[key] = value
+			return value
+		}
+	}
+
 	return nil
 }
 

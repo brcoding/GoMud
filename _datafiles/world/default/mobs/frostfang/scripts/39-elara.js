@@ -1,4 +1,3 @@
-
 const nouns = ["quest", "book", "books", "library", "spell", "spells", "worried", "worry"];
 
 function onAsk(mob, room, eventDetails) {
@@ -68,11 +67,10 @@ function onGive(mob, room, eventDetails) {
         mob.Command("emote Shows you some useful gestures.");
         mob.Command("say Check your <ansi fg=\"command\">spellbook</ansi>.");
 
-        partyMembers = user.GetPartyMembers();
-        for( i = 0; i < partyMembers.length; i++ ) {    
-            a = partyMembers[i];
-            a.LearnSpell("illum");
-        }
+        var learned = user.LearnSpell("illum");
+        // Optional: Add debug commands if needed for the user
+        // mob.Command("say Debug: LearnSpell for " + user.Name() + " returned: " + learned); 
+        // mob.Command("say Debug: " + user.Name() + " spellbook: " + user.SpellBook());
         
         return true;
     }

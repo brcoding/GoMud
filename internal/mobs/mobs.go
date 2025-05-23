@@ -5,29 +5,31 @@ import (
 	"math"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/GoMudEngine/GoMud/internal/buffs"
 	"github.com/GoMudEngine/GoMud/internal/characters"
 	"github.com/GoMudEngine/GoMud/internal/configs"
-	"github.com/GoMudEngine/GoMud/internal/conversations"
 	"github.com/GoMudEngine/GoMud/internal/events"
 	"github.com/GoMudEngine/GoMud/internal/mudlog"
 	"gopkg.in/yaml.v2"
 
 	"github.com/GoMudEngine/GoMud/internal/fileloader"
 	"github.com/GoMudEngine/GoMud/internal/items"
+	"github.com/GoMudEngine/GoMud/internal/mobinterfaces"
 	"github.com/GoMudEngine/GoMud/internal/races"
 	"github.com/GoMudEngine/GoMud/internal/util"
 )
 
 var (
-	instanceCounter int = 0
-	mobs                = map[int]*Mob{}
-	allMobNames         = []string{}
-	mobInstances        = map[int]*Mob{}
-	mobsHatePlayers     = map[string]map[int]int{}
-	mobNameCache        = map[MobId]string{}
+	instanceCounter   int = 0
+	mobs                  = map[int]*Mob{}
+	allMobNames           = []string{}
+	mobInstances          = map[int]*Mob{}
+	mobInstancesMutex sync.RWMutex
+	mobsHatePlayers   = map[string]map[int]int{}
+	mobNameCache      = map[MobId]string{}
 
 	recentlyDied = map[int]int{}
 )
@@ -63,6 +65,7 @@ type Mob struct {
 	LastIdleCommand uint8    `yaml:"-"` // Track what hte last used idlecommand was
 	BoredomCounter  uint8    `yaml:"-"` // how many rounds have passed since this mob has seen a player
 	Groups          []string // What group do they identify with? Helps with teamwork
+	Nicknames       []string `yaml:"nicknames,omitempty"`    // Alternative names that can be used to refer to this mob
 	Hates           []string `yaml:"hates,omitempty"`        // What NPC groups or races do they hate and probably fight if encountered?
 	IdleCommands    []string `yaml:"idlecommands,omitempty"` // Commands they may do while idle (not in combat)
 	AngryCommands   []string // randomly chosen to queue when they are angry/entering combat.
@@ -80,8 +83,34 @@ type Mob struct {
 	lastCommandTurn uint64    // The last turn a command was scheduled for
 }
 
-func MobInstanceExists(instanceId int) bool {
+// Ensure Mob implements MobInterface
+var _ mobinterfaces.MobInterface = (*Mob)(nil)
 
+// GetInstanceId implements mobinterfaces.MobInterface
+func (m *Mob) GetInstanceId() int {
+	return m.InstanceId
+}
+
+// GetName implements mobinterfaces.MobInterface
+func (m *Mob) GetName() string {
+	return m.Character.Name
+}
+
+// GetCharacter implements mobinterfaces.MobInterface
+func (m *Mob) GetCharacter() interface{} {
+	return m.Character
+}
+
+func init() {
+	// Register our GetInstance implementation
+	mobinterfaces.RegisterGetInstance(func(instanceId int) mobinterfaces.MobInterface {
+		return GetInstance(instanceId)
+	})
+}
+
+func MobInstanceExists(instanceId int) bool {
+	mobInstancesMutex.RLock()
+	defer mobInstancesMutex.RUnlock()
 	_, ok := mobInstances[instanceId]
 	return ok
 }
@@ -207,7 +236,9 @@ func NewMobById(mobId MobId, homeRoomId int, forceLevel ...int) *Mob {
 		mob.Character.Validate(true)
 
 		// Save the mob instance
+		mobInstancesMutex.Lock()
 		mobInstances[mob.InstanceId] = &mob
+		mobInstancesMutex.Unlock()
 
 		return mobInstances[mob.InstanceId]
 	}
@@ -223,7 +254,8 @@ func GetMobSpec(mobId MobId) *Mob {
 }
 
 func GetInstance(instanceId int) *Mob {
-
+	mobInstancesMutex.RLock()
+	defer mobInstancesMutex.RUnlock()
 	if m, ok := mobInstances[instanceId]; ok {
 		return m
 	}
@@ -231,8 +263,9 @@ func GetInstance(instanceId int) *Mob {
 }
 
 func GetAllMobInstanceIds() []int {
-
-	ids := make([]int, 0)
+	mobInstancesMutex.RLock()
+	defer mobInstancesMutex.RUnlock()
+	ids := make([]int, 0, len(mobInstances)) // Pre-allocate slice capacity
 	for id := range mobInstances {
 		ids = append(ids, id)
 	}
@@ -240,7 +273,19 @@ func GetAllMobInstanceIds() []int {
 }
 
 func DestroyInstance(instanceId int) {
-
+	mobInstancesMutex.Lock()
+	defer mobInstancesMutex.Unlock()
+	// Before deleting, ensure conversation is cleaned up if any
+	// This check is now safer due to the lock on mobInstances
+	if mob, exists := mobInstances[instanceId]; exists {
+		if mob.conversationId != 0 {
+			// Removing direct call to conversations.Destroy to break import cycle.
+			// Conversation cleanup will be handled by the conversation package's
+			// own mechanisms (e.g., when IsComplete is checked, or via its maintenance routine).
+			// We still clear the conversationId from the mob's perspective.
+			mob.SetConversation(0)
+		}
+	}
 	delete(mobInstances, instanceId)
 }
 
@@ -266,8 +311,14 @@ func (m *Mob) SetConversation(id int) {
 	m.conversationId = id
 }
 
-func (m *Mob) Converse() {
+// GetConversationId returns the current conversation ID for the mob.
+func (m *Mob) GetConversationId() int {
+	return m.conversationId
+}
 
+/* // Removing Mob.Converse to break import cycle
+func (m *Mob) Converse() {
+	mudlog.Debug("Converse", "info", fmt.Sprintf("mob converse: %v", m))
 	mobInst1, mobInst2, actions := conversations.GetNextActions(m.conversationId)
 
 	var mob1 *Mob = nil
@@ -316,6 +367,7 @@ func (m *Mob) Converse() {
 		return
 	}
 }
+*/
 
 // Cause the mob to basically wait and do nothing for x seconds
 func (m *Mob) Sleep(seconds int) {

@@ -13,7 +13,6 @@ import (
 )
 
 func SayTo(rest string, mob *mobs.Mob, room *rooms.Room) (bool, error) {
-
 	// Don't bother if no players are present
 	if room.PlayerCt() < 1 {
 		return true, nil

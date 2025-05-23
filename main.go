@@ -23,15 +23,18 @@ import (
 	"github.com/GoMudEngine/GoMud/internal/colorpatterns"
 	"github.com/GoMudEngine/GoMud/internal/configs"
 	"github.com/GoMudEngine/GoMud/internal/connections"
+	"github.com/GoMudEngine/GoMud/internal/conversations"
 	"github.com/GoMudEngine/GoMud/internal/events"
 	"github.com/GoMudEngine/GoMud/internal/flags"
 	"github.com/GoMudEngine/GoMud/internal/gametime"
 	"github.com/GoMudEngine/GoMud/internal/hooks"
 	"github.com/GoMudEngine/GoMud/internal/inputhandlers"
 	"github.com/GoMudEngine/GoMud/internal/integrations/discord"
+	intllm "github.com/GoMudEngine/GoMud/internal/integrations/llm"
 	"github.com/GoMudEngine/GoMud/internal/items"
 	"github.com/GoMudEngine/GoMud/internal/keywords"
 	"github.com/GoMudEngine/GoMud/internal/language"
+	"github.com/GoMudEngine/GoMud/internal/llm"
 	"github.com/GoMudEngine/GoMud/internal/usercommands"
 	"github.com/gorilla/websocket"
 
@@ -170,6 +173,20 @@ func main() {
 		mudlog.Warn("Discord", "info", "integration is disabled")
 	}
 
+	// LLM integration
+	if bool(c.Integrations.LLM.Enabled) {
+		intllm.Init()
+		// Initialize the unified LLM service
+		llm.SetupLLMSystem()
+		mudlog.Info("LLM", "info", "integration is enabled")
+	} else {
+		mudlog.Warn("LLM", "info", "integration is disabled")
+	}
+
+	// Initialize conversations package
+	conversations.Init()
+	mudlog.Info("Conversations", "info", "package initialized")
+
 	mudlog.Error(
 		"Starting server",
 		"name", string(c.Server.MudName),
@@ -280,6 +297,10 @@ func main() {
 	// cleanup all connections
 	connections.Cleanup()
 
+	// Shutdown conversations package
+	conversations.Shutdown()
+	mudlog.Info("Conversations", "info", "package shutdown")
+
 	for _, s := range allServerListeners {
 		s.Close()
 	}
@@ -297,6 +318,14 @@ func main() {
 			time.Sleep(time.Duration(3) * time.Second)
 		}
 	}()
+
+	// Make sure token usage is saved to player files
+	for _, player := range users.GetAllActiveUsers() {
+		if tokenUsage := llm.GetTokenUsage(player.UserId); tokenUsage != nil {
+			mudlog.Info("Shutdown", "save_token_usage", fmt.Sprintf("Saving LLM token usage for %s: %d calls, %d tokens",
+				player.Username, tokenUsage.TotalCalls, tokenUsage.InputTokens+tokenUsage.OutputTokens))
+		}
+	}
 
 	// Close the channel, signalling to the worker threads to shutdown.
 	close(workerShutdownChan)

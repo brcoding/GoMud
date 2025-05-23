@@ -1,6 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "rat": ["rat", "big rat"]
-  Conversation:
-    - ["#1 sayto #2 SQUEEK!"]
-    - ["#2 sayto #1 SQUEEEEEEEK!"]
+supported:
+  "rat": ["*"]  # Startland rat can talk to anyone
+  "*": ["rat"]  # Anyone can talk to the startland rat
+llmconfig:
+  enabled: true
+  systemprompt: "You are a rat in Startland, a simple creature with simple needs. You communicate primarily through squeaks and simple actions. You're primarily concerned with food, safety, and your territory. Your responses should be very basic, consisting mainly of 'SQUEEK' with occasional simple actions. Keep responses under 5 words, mostly animal sounds."
+  maxcontextturns: 3
+  includenames: true
+  greeting: "SQUEEK?"
+  farewell: "SQUEEEK! *scurries away*"
+  idletimeout: 300

@@ -1,19 +1,11 @@
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "shadow master": ["shadow trainee"]
-  Conversation:
-    - ["#1 sayto #2 have you had any luck locating the amethyst?"]
-    - ["#2 say Yes, it is in the bank vault."]
-    - ["#1 say Well then, what is the plan to retrieve it?"]
-    - ["#2 say We learned recently of a secret tunnel below it."]
-    - ["#1 say Interesting, then lets talk more about it later in private."]
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "shadow master": ["shadow trainee"]
-  Conversation:
-    - ["#1 say You have done well to make it this far into my domain. Perhaps you should train here."]
-- 
-  Supported: # A map of lowercase names of "Initiator" (#1) to array of "Participant" (#2) names allowed to use this conversation. 
-    "shadow master": ["shadow trainee"]
-  Conversation:
-    - ["#1 sayto #2 That pesky rat catcher keeps trying to get more work from us. I told him we don't need him anymore."]
+supported:
+  "beggar": ["*"]  # Beggar can talk to anyone
+  "*": ["beggar"]  # Anyone can talk to the beggar
+llmconfig:
+  enabled: true
+  systemprompt: "You are a beggar in the Frostfang Slums. Life has been hard on you, and you struggle to survive day to day. Despite your circumstances, you have keen observational skills and know much about what happens in the shadows of the city. You speak with a humble, sometimes desperate tone, occasionally asking for coins or food. You have surprising insights about both the slums and the main city, as you observe much that others ignore. Keep your responses brief - no more than two sentences - and maintain your humble, street-wise character."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "*holds out a trembling hand* Spare a coin for a poor soul, kind stranger? I can tell you things about this city others don't see."
+  farewell: "*huddles back into the shadows* Blessings on you, whether you helped or not. The cold comes for us all eventually."
+  idletimeout: 300

@@ -9,6 +9,7 @@ import (
 	"github.com/GoMudEngine/GoMud/internal/races"
 	"github.com/GoMudEngine/GoMud/internal/rooms"
 	"github.com/GoMudEngine/GoMud/internal/templates"
+	"github.com/GoMudEngine/GoMud/internal/term"
 	"github.com/GoMudEngine/GoMud/internal/users"
 	"github.com/GoMudEngine/GoMud/internal/util"
 )
@@ -148,6 +149,9 @@ func Inventory(rest string, user *users.UserRecord, room *rooms.Room, flags even
 
 	tplTxt, _ := templates.Process("character/inventory", invData, user.UserId)
 	user.SendText(tplTxt)
+
+	// Display gold balance
+	user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 
 	return true, nil
 }

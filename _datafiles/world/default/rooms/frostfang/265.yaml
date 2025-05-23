@@ -12,7 +12,7 @@ exits:
   south:
     roomid: 263
 spawninfo:
-- mobid: 26
+- mobid: 63
   message: sophie steps out from another room.
   name: sophie
   maxwander: 1

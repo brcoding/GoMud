@@ -1,0 +1,3 @@
+<ansi fg="black-bold">.:</ansi> <ansi fg="magenta">Help for </ansi><ansi fg="command">where</ansi>
+
+<ansi fg="black-bold">.:</ansi> The command <ansi fg="command">where</ansi> is not listed among the available commands. You may want to use <ansi fg="command">look</ansi> to examine your surroundings or <ansi fg="command">exits</ansi> to see available directions. If you're seeking your location details or specific area info, please specify, and I can suggest the best command for that.

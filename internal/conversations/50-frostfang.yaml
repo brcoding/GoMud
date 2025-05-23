@@ -1,0 +1,20 @@
+- mobid: 50
+  zone: Frostfang
+  supported:
+    "moilyn the wizard": ["*"]  # Allow Moilyn to talk to anyone
+    "*": ["moilyn the wizard"]  # Allow anyone to talk to Moilyn: ["*"]
+    #"*": ["*"]
+  conversation:
+    - ["#1 sayto #2 Ah, welcome to my humble shop! I am Moilyn, purveyor of magical artifacts and curiosities. How may I assist you today?"]
+    - ["#1 sayto #2 Greetings, traveler! I see you've found your way to my shop. Feel free to browse my wares or ask about any magical items that catch your eye."]
+    - ["#2 sayto #1 *", "#1 llm respond to the player's greeting"]
+    - ["#1 sayto #2 I have several magical items available for purchase. You can see my current inventory by typing 'list'. Is there anything specific you're looking for?"]
+    - ["#2 sayto #1 *", "#1 llm respond to the player's inquiry about items"]
+    - ["#1 sayto #2 Safe travels, adventurer! Do return if you need more magical assistance."]
+    - ["#1 sayto #2 Farewell! May the arcane arts guide your path."]
+    - ["#2 sayto #1 *", "#1 llm respond to the player's farewell"]
+  llmconfig:
+    enabled: true
+    systemprompt: "You are Moilyn the Wizard, a knowledgeable and friendly shopkeeper who specializes in magical artifacts and curiosities. You are helpful and informative, always eager to share your knowledge about magical items and the arcane arts. Keep your responses concise and in character."
+    maxcontextturns: 5
+    includenames: true 

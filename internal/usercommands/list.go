@@ -141,6 +141,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To buy something, type: <ansi fg="command">buy [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 		if len(mercsAvailable) > 0 {
@@ -227,6 +228,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To Hire a merc, type: <ansi fg="command">hire [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 		if len(buffsAvailable) > 0 {
@@ -300,6 +302,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To buy an enchantment, type: <ansi fg="command">buy [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 		if len(petsAvailable) > 0 {
@@ -379,6 +382,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To buy a pet, type: <ansi fg="command">buy [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 	}
 
@@ -501,6 +505,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To buy something, type: <ansi fg="command">buy [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 		if len(mercsAvailable) > 0 {
@@ -588,6 +593,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To Hire a merc, type: <ansi fg="command">hire [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 		if len(buffsAvailable) > 0 {
@@ -661,6 +667,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To buy an enchantment, type: <ansi fg="command">buy [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 		if len(petsAvailable) > 0 {
@@ -741,6 +748,7 @@ func List(rest string, user *users.UserRecord, room *rooms.Room, flags events.Ev
 			tplTxt, _ := templates.Process("tables/shoplist", saleItemsData, user.UserId, user.UserId)
 			user.SendText(tplTxt)
 			user.SendText(fmt.Sprintf(`To buy a pet, type: <ansi fg="command">buy [name]</ansi>%s`, term.CRLFStr))
+			user.SendText(fmt.Sprintf(`<ansi fg="gold">You have %d gold coins.</ansi>%s`, user.Character.Gold, term.CRLFStr))
 		}
 
 	}

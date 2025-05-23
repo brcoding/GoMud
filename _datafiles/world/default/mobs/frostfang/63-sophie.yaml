@@ -1,0 +1,30 @@
+mobid: 63
+zone: Frostfang
+itemdropchance: 0
+hostile: false
+groups: 
+  - frostfang-npc
+activitylevel: 15
+maxwander: 1
+idlecommands:
+  - 'say *sighs deeply, fidgeting with her empty necklace chain*'
+  - 'say *looks around nervously, touching her neck*'
+  - 'emote searches through her pockets with a worried expression.'
+  - 'emote glances out the window toward the garden hedge.'
+  - 'emote wrings her hands anxiously.'
+character:
+  name: sophie
+  description: Sophie is a young woman with chestnut hair tied back in a simple braid. She has a gentle face with warm brown eyes, though currently creased with worry. She wears a modest dress of blue wool, well-made but practical for Frostfang's cold climate. Her slender fingers keep reaching for her neck where a necklace would normally hang. Despite her obvious distress, she carries herself with quiet dignity, suggesting a resilient spirit beneath her current anxiety.
+  raceid: 1
+  level: 5
+  gold: 15
+  equipment:
+    body:
+      itemid: 20008
+    feet:
+      itemid: 20003
+nicknames:
+  - woman
+  - young woman
+  - worried woman
+  - girl 

@@ -22,8 +22,12 @@ spawninfo:
 - mobid: 1
   message: A rat scurries out from a dark hole and wiggles its whiskers.
   level: 1
-  respawnrate: 1 real minute
+  respawnrate: 2 real minutes
 - mobid: 1
-  message: A rat falls from the sky.
+  message: A rat wanders out from nowhere and looks at you.
   level: 1
   respawnrate: 2 real minutes
+- mobid: 64
+  message: Something glints in the shadows...
+  level: 2
+  respawnrate: 5 real minutes

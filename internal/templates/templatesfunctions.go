@@ -199,6 +199,14 @@ var (
 		"permadeath": func() bool {
 			return bool(configs.GetGamePlayConfig().Death.PermaDeath)
 		},
+		"getTempData": func(userId int, key string) any {
+			if u := users.GetByUserId(userId); u != nil {
+				if data := u.GetTempData(key); data != nil {
+					return data
+				}
+			}
+			return 0
+		},
 		"zodiac": func(year int) string {
 			return gametime.GetZodiac(year)
 		},

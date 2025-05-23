@@ -15,7 +15,7 @@ exits:
   southwest:
     roomid: 270
 spawninfo:
-- mobid: 2
+- mobid: 62
   message: A soldier walks into the barracks.
   name: chubby guard
   maxwander: 2

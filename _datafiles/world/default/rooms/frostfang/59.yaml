@@ -1,7 +1,7 @@
 roomid: 59
 zone: Frostfang
 title: The East Gate
-description: The East Frostfang Gate stands as a formidable sentinel, marking the
+description: The mighty East Frostfang Gate stands as a formidable sentinel, marking the
   eastern entrance to the castle grounds. Crafted from massive slabs of dark, weathered
   stone, it's adorned with intricate carvings of ice dragons and winter warriors.
   Two imposing watchtowers flank the gate, their arrow slits ever vigilant. The gate
@@ -11,6 +11,10 @@ description: The East Frostfang Gate stands as a formidable sentinel, marking th
 mapsymbol: G
 maplegend: East-Gate
 biome: city
+mutators:
+  - mutatorid: east_gate
+    spawnedround: 999999999
+    despawnedround: 0
 exits:
   east:
     roomid: 60
@@ -28,3 +32,10 @@ idlemessages:
 - You hear the wind howling outside the gate.
 - The wind whistles through the arrow slits in the watchtowers.
 - The gate creaks in the wind.
+spawninfo:
+- mobid: 62
+  message: A guard takes up position at the gate.
+  name: gate guard
+  maxwander: 1
+  levelmod: 5
+  respawnrate: 5 real minutes

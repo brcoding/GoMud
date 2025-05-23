@@ -255,13 +255,16 @@ func SetZombieUser(userId int) {
 }
 
 func SaveAllUsers(isAutoSave ...bool) {
-
 	for _, u := range userManager.Users {
+		// Try to ensure LLM usage data is properly saved
+		if u.GetTempData("LLMUsage") != nil {
+			mudlog.Debug("SaveAllUsers", "info", fmt.Sprintf("Preserving LLM token usage for user %s", u.Username))
+		}
+
 		if err := SaveUser(*u, isAutoSave...); err != nil {
 			mudlog.Error("SaveAllUsers()", "error", err.Error())
 		}
 	}
-
 }
 
 func LogOutUserByConnectionId(connectionId connections.ConnectionId) error {
@@ -272,6 +275,12 @@ func LogOutUserByConnectionId(connectionId connections.ConnectionId) error {
 
 		// Make sure the user data is saved to a file.
 		if u != nil {
+			// Save LLM token usage to player data
+			if llmTokenUsage, ok := u.GetTempData("LLMUsage").(map[string]interface{}); ok {
+				mudlog.Debug("LogOutUserByConnectionId", "info", fmt.Sprintf("Saving LLM token usage for user %s", u.Username))
+				u.SetTempData("LLMUsage", llmTokenUsage) // Ensure it's part of the save data
+			}
+
 			u.Character.Validate()
 			SaveUser(*u)
 		}
