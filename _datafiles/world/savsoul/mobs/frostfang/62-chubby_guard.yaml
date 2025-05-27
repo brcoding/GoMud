@@ -1,0 +1,41 @@
+mobid:  62
+zone: Frostfang
+itemdropchance: 2
+hostile: false
+maxwander: 20
+groups: 
+  - frostfang-npc
+nicknames:
+  - fatso
+  - fatty
+  - glutton
+  - chubby
+  - piggy
+idlecommands:
+  - 'emote picks something out of his teeth and examines it before eating it again.'
+  - 'emote adjusts his belt, which strains against his protruding belly.'
+  - 'emote unwraps a greasy package from his pocket and stuffs the contents into his mouth.'
+  - 'emote belches loudly and pats his stomach with satisfaction.'
+  - 'say *mouth full* Anyone know when the mess hall opens?'
+  - 'emote licks his fingers noisily, leaving them glistening with grease.'
+  - 'say My stomach''s been growling all day. Time for my fourth lunch.'
+activitylevel: 20
+character:
+  name: chubby guard
+  description: 'This guard stands out not for his vigilance but for his impressive girth. His uniform, several sizes too small, strains at the seams and is mottled with a colorful array of food stains - some fresh, others with historical significance. His ruddy face, perpetually glistening with sweat, sports multiple chins that quiver with his every movement. Crumbs nest in his unkempt beard, and his fingers are permanently stained with grease. The standard-issue belt that should hold his sword instead supports his enormous belly, causing the weapon to sit at an awkward angle that suggests it has rarely, if ever, been drawn. His beady eyes constantly scan not for danger but for the next potential source of food, and various bulges in his pockets hint at hidden snacks. The smell of old food and sweat follows him, creating a pungent aura that announces his presence long before he comes into view.'
+  raceid: 1
+  level: 10
+  alignment: 30
+  gold: 3
+  equipment:
+    weapon:
+      itemid: 10002
+    neck:
+      itemid: 20002
+    feet:
+      itemid: 20003
+hates:
+  - rats
+  - undead
+  - slum-ruffians
+scripttag: hungry 

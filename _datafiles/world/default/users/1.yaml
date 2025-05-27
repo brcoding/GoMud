@@ -1,7 +1,7 @@
 userid: 1
 role: admin
 username: admin
-password: password
+password: d8bb6ebdc18c0b721fed7fff473c6678e2953c5417dfa5def78087fa48f46e3d
 joined: 2024-10-31T13:28:45.395873-07:00
 macros:
   =1: e;e;e;e;e;e;e;e
@@ -17,9 +17,7 @@ character:
     other adventurers, granting them strength, wisdom, or fortune beyond their wildest
     dreams. Conversely, he can also mete out justice to those who would seek to disrupt
     the balance of the world, swiftly and decisively.
-  adjectives:
-  - zombie
-  roomid: 59
+  roomid: 783
   zone: Frostfang
   raceid: 2
   stats:
@@ -65,15 +63,14 @@ character:
     list:
     - buffid: 28
       permabuff: true
-      roundcounter: 23
+      roundcounter: 18
       triggersleft: 1000000000
     - buffid: 29
       permabuff: true
-      roundcounter: 31
+      roundcounter: 41
       triggersleft: 1000000000
     - buffid: 39
       permabuff: true
-      roundcounter: 5
       triggersleft: 1000000000
   equipment:
     weapon:
@@ -152,4 +149,10 @@ itemstorage:
   items:
   - itemid: 20011
 configoptions:
+  LLMUsage:
+    input_tokens: 1967
+    last_used: "2025-05-25T07:30:51.652281441Z"
+    output_tokens: 464
+    total_calls: 3
+    total_cost: 0.0012860999999999999
   tinymap: true

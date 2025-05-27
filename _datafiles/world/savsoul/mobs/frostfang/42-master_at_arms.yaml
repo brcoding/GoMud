@@ -1,0 +1,38 @@
+mobid:  42
+zone: Frostfang
+itemdropchance: 2
+hostile: false
+maxwander: 0
+groups: 
+  - frostfang-npc
+nicknames:
+  - master
+  - arms
+  - weapons master
+  - instructor
+  - trainer
+  - combat master
+idlecommands:
+  - 'emote glares at the training dummies with disapproval'
+  - 'emote mutters something about "fighters these days" while sharpening a blade'
+  - 'emote spits on the ground and adjusts his armor with a grimace'
+  - 'say You call that a stance? My grandmother could knock you over with a feather!'
+  - 'say Pain is the best teacher - and I''ve got plenty of lessons for the lot of you.'
+  - 'emote scowls at passersby, looking for any sign of weakness'
+activitylevel: 50
+character:
+  name: master-at-arms
+  description: 'The Master-at-Arms stands like a weathered oak in the training yard, his face a roadmap of scars from countless battles. His grizzled beard barely conceals a permanent scowl, and his eyes - one a piercing blue, the other milky from an old wound - scrutinize everyone for signs of weakness. Decades of combat have left his body hardened but twisted, with a pronounced limp that does nothing to diminish his imposing presence. His armor, though impeccably maintained, bears the dents and scratches of real combat rather than ceremonial use. When he speaks, his voice emerges as a gravelly growl, honed by years of shouting orders over the din of battle. Despite his intimidating demeanor and perpetual irritability, his training methods produce undeniably effective warriors, earning him grudging respect throughout Frostfang.'
+  raceid: 1
+  level: 25
+  alignment: 35
+  gold: 25
+  equipment:
+    weapon:
+      itemid: 10003
+    offhand:
+      itemid: 20004
+    neck:
+      itemid: 20002
+    feet:
+      itemid: 20003

@@ -1,0 +1,8 @@
+buffid: 38
+name: Shadow Eyes
+description: You are able to see deep into the shadows
+secret: false
+triggerrate: 1 real minute
+triggercount: 1
+flags:
+  - see-hidden

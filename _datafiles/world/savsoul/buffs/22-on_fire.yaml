@@ -1,0 +1,9 @@
+buffid: 22
+name: On Fire
+description: You're on fire!
+secret: false
+triggernow: true
+triggerrate: 2 rounds
+triggercount: 5
+flags:
+  - cancel-on-water

@@ -11,3 +11,4 @@ server.key
 tmp-gomud.exe
 __debug*
 _datafiles/config.custom.yaml
+go-mud-server

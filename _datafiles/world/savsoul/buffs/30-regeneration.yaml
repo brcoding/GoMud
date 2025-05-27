@@ -1,0 +1,5 @@
+buffid: 30
+name: Regeneration
+description: Your wounds slowly regenerate
+triggerrate: 1 round
+triggercount: 15

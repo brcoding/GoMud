@@ -1,0 +1,6 @@
+buffid: 2
+name: Drugged Haze
+description: You are in a peaceful haze.
+secret: false
+triggerrate: 2 rounds
+triggercount: 3

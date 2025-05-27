@@ -1,0 +1,8 @@
+buffid: 15
+name: Sleeping
+description: You are getting much needed rest.
+triggerrate: 1 round
+triggercount: 50
+flags:
+- cancel-on-action
+- cancel-on-combat

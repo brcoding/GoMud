@@ -1,0 +1,7 @@
+buffid: 21
+name: Explosion
+description: A bomb exploded near you!
+secret: false
+triggernow: true
+triggerrate: 1 round
+triggercount: 1

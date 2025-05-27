@@ -1,0 +1,10 @@
+buffid: 7
+name: Hamstrung
+description: You've been crippled by a hamstring attack!
+secret: false
+triggerrate: 1 round
+triggercount: 3
+flags:
+  - no-combat
+  - no-flee
+  - no-go

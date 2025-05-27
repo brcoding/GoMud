@@ -1,0 +1,10 @@
+buffid: 12
+name: Tackled
+description: You've been tackled to the ground!
+secret: false
+triggerrate: 1 round
+triggercount: 2
+flags:
+  - no-combat
+  - no-flee
+  - no-go

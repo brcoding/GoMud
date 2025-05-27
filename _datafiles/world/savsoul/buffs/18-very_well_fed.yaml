@@ -1,0 +1,12 @@
+buffid: 18
+name: Very well fed
+description: You feel very full.
+triggerrate: 1 round
+triggercount: 100 # lasts 5 minutes?
+statmods:
+  strength: 1
+  speed: 1
+  smarts: 1
+  vitality: 1
+  mysticism: 1
+  perception: 1

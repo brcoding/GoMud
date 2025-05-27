@@ -1,0 +1,11 @@
+supported:
+  "rat": ["rat", "big rat"]
+  "*": ["rat"]  # Allow anyone to talk to rats
+llmconfig:
+  enabled: true
+  systemprompt: "You are a rat in a fantasy RPG. You communicate with simple squeaks and rodent-like behaviors. Your responses should be very short, consisting mainly of 'SQUEEK' with occasional simple actions like *sniffs* or *scurries*. Keep responses under 10 words."
+  maxcontextturns: 5
+  includenames: true
+  greeting: "*sniffs curiously* SQUEEK!"
+  farewell: "*scurries away* SQUEEEEEEEK!"
+  idletimeout: 300

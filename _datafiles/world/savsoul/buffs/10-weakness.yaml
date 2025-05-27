@@ -1,0 +1,11 @@
+buffid: 10
+name: Weakness
+description: You are trembling with weakness.
+secret: false
+triggerrate: 2 rounds
+triggercount: 2
+statmods:
+  strength: -15
+  speed: -15
+  vitality: -15
+  perception: -10
