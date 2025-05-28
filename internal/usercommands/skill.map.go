@@ -168,14 +168,19 @@ func Map(rest string, user *users.UserRecord, room *rooms.Room, flags events.Eve
 	width := 0
 
 	displayLines := []string{}
-	for i, line := range mapOutput.Render {
-		displayLines = append(displayLines, string(line))
-		if width == 0 {
-			width = runewidth.StringWidth(displayLines[0])
+	for _, line := range mapOutput.Render {
+		var builtLine strings.Builder
+		for _, r := range line {
+			if txtLegend, isSymbol := legend[r]; isSymbol {
+				txtLc := strings.ToLower(txtLegend)
+				builtLine.WriteString(fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, r))
+			} else {
+				builtLine.WriteRune(r)
+			}
 		}
-		for sym, txtLegend := range legend {
-			txtLc := strings.ToLower(txtLegend)
-			displayLines[i] = strings.Replace(displayLines[i], string(sym), fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, sym), -1)
+		displayLines = append(displayLines, builtLine.String())
+		if width == 0 {
+			width = runewidth.StringWidth(string(line))
 		}
 	}
 

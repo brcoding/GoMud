@@ -445,12 +445,17 @@ func GetMap(mapRoomId int, zoomLevel int, mapHeight int, mapWidth int, mapName s
 	legend := mapOutput.GetLegend(keywords.GetAllLegendAliases(room.Zone))
 
 	displayLines := []string{}
-	for i, line := range mapOutput.Render {
-		displayLines = append(displayLines, string(line))
-		for sym, txtLegend := range legend {
-			txtLc := strings.ToLower(txtLegend)
-			displayLines[i] = strings.Replace(displayLines[i], string(sym), fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, sym), -1)
+	for _, line := range mapOutput.Render {
+		var builtLine strings.Builder
+		for _, r := range line {
+			if txtLegend, isSymbol := legend[r]; isSymbol {
+				txtLc := strings.ToLower(txtLegend)
+				builtLine.WriteString(fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, r))
+			} else {
+				builtLine.WriteRune(r)
+			}
 		}
+		displayLines = append(displayLines, builtLine.String())
 	}
 
 	mapData := map[string]any{

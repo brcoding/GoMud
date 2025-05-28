@@ -501,10 +501,16 @@ func lookRoom(user *users.UserRecord, roomId int, secretLook bool) {
 			legend := output.GetLegend(keywords.GetAllLegendAliases(room.Zone))
 
 			for i := 1; i <= c.Height; i++ {
-				for sym, txtLegend := range legend {
-					txtLc := strings.ToLower(txtLegend)
-					tinyMap[i] = strings.Replace(tinyMap[i], string(sym), fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, sym), -1)
+				var builtLine strings.Builder
+				for _, r := range tinyMap[i] {
+					if txtLegend, isSymbol := legend[r]; isSymbol {
+						txtLc := strings.ToLower(txtLegend)
+						builtLine.WriteString(fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, r))
+					} else {
+						builtLine.WriteRune(r)
+					}
 				}
+				tinyMap[i] = builtLine.String()
 			}
 
 			details = rooms.GetDetails(room, user, tinyMap)

@@ -122,7 +122,9 @@ func GetDetails(r *Room, user *users.UserRecord, tinymap ...[]string) RoomTempla
 				description = append(description, strings.Repeat(` `, desclineWidth))
 			}
 
-			description[i] += strings.Repeat(` `, desclineWidth-len(description[i])) + tinymap[0][i]
+			// Calculate the visible width of the description line (without ANSI tags)
+			visibleWidth := len(util.StripANSI(description[i]))
+			description[i] += strings.Repeat(` `, desclineWidth-visibleWidth) + tinymap[0][i]
 		}
 
 		if renderNouns && len(r.Nouns) > 0 {
