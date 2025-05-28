@@ -1,0 +1,25 @@
+roomid: 16 # Explicitly using 16 as per dossier and mob path request
+zone: poway
+title: Del Poniente - Monastic Commune
+description: |
+  An unexpected air of tranquility pervades this well-ordered farming commune. 
+  Neatly tended fields stretch out, showcasing plants strangely resistant to the harsh environment. 
+  Simple, sturdy adobe buildings house the monastic community that dedicates itself to preserving 
+  the knowledge of seed-saving and the delicate art of radiation pruning. The quiet is broken only by 
+  the rustling of crops and the soft chanting of the commune members.
+mapsymbol: 'M' # Monastic or Monastery
+maplegend: DelPoniente
+biome: farmland # Farming commune
+exits:
+  east:
+    roomid: 115   # Back to La Manda
+spawninfo:
+- mobid: 25      # Del Poniente Monk (assuming mobid 25)
+  message: A serene monk in simple robes tends to a glowing plant, a pair of pruning shears in hand.
+  respawnrate: 60 minutes # Less frequent, more peaceful
+  maxcount: 2
+idlemessages:
+- Soft, melodic chanting drifts from one of the adobe buildings.
+- Commune members work silently and diligently in the fields, their movements precise.
+- 'A carefully hand-painted sign illustrates techniques for "Radiation Pruning - Grade 3 Canker".'
+- Despite the surrounding devastation, the air here feels cleaner, more alive. 

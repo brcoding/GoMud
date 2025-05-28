@@ -1,0 +1,19 @@
+roomid: 43
+zone: poway
+title: Rolling Hills Estates - Landslide Zone
+description: |
+  The terrain here is a chaotic jumble of earth and debris. These were once rolling hills dotted with estates, 
+  but frequent quakes have turned them into an active landslide zone. Houses are tilted at crazy angles, 
+  some half-swallowed by the earth. During tremor season, the hills literally shift and groan. 
+  Navigating this area is treacherous, with new fissures and slides appearing without warning.
+mapsymbol: '~' # Wavy lines for unstable terrain
+maplegend: RollingHls
+biome: wasteland # Unstable, landslide-prone
+exits:
+  west:
+    roomid: 42    # Back to Stoneridge Chateaus
+idlemessages:
+- A low rumble echoes through the ground, a reminder of the unstable earth.
+- Loose soil and rocks cascade down a nearby slope.
+- 'A tilted house groans, threatening to collapse further.'
+- Fresh cracks in the earth show recent seismic activity. 

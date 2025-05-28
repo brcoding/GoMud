@@ -1,0 +1,25 @@
+roomid: 7
+zone: poway
+title: Poway Road Junction
+description: The main commercial artery of old Poway stretches before you, its four lanes 
+  cracked and buckled from years of neglect and seismic activity. Burned-out cars serve 
+  as makeshift barriers and trading posts. To the west, the auto row's rusted signs still 
+  advertise deals that ended centuries ago. Eastward, the road leads toward what remains 
+  of the civic center.
+mapsymbol: +
+maplegend: Junction
+biome: city
+exits:
+  east:
+    roomid: 1      # Back to city center
+  west:
+    roomid: 191    # Auto Row
+  north:
+    roomid: 196    # Old Poway Village
+  south:
+    roomid: 192    # Central Retail
+idlemessages:
+- A trader pushes a shopping cart full of scavenged electronics down the road.
+- The wind carries the distant sound of hammering from the auto row.
+- A pack of feral dogs investigates an overturned delivery truck.
+- Neon signs flicker sporadically, powered by jury-rigged solar panels. 

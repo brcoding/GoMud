@@ -1,0 +1,31 @@
+roomid: 12
+zone: poway
+title: South Poway Crossroads
+description: The intersection where civilization once ended and rural Poway began now marks 
+  the boundary between the struggling city center and the wild southern territories. Rusted 
+  road signs point toward places that may no longer exist - Sycamore Creek, Twin Peaks, 
+  and the old Scripps-Poway crater. A makeshift watchtower built from stacked cars provides 
+  a vantage point over the desolate landscape.
+mapsymbol: +
+maplegend: Crossroads
+biome: wasteland
+exits:
+  north:
+    roomid: 1      # Back to city center
+  northeast:
+    roomid: 181    # Civic center approach
+  east:
+    roomid: 145    # Twin Peaks trail (Foothills)
+  southeast:
+    roomid: 44     # Chaparral Estates
+  south:
+    roomid: 42     # Stoneridge Chateaus
+  southwest:
+    roomid: 141    # Sycamore Creek approach
+  west:
+    roomid: 160    # Scripps-Poway crater edge
+idlemessages:
+- A scout in the watchtower adjusts their binoculars, scanning the horizon.
+- Dust clouds in the distance might be travelers, or something worse.
+- 'A weathered sign creaks in the wind: "Danger - Radiation Ahead"'
+- The acrid smell of the southern wastes drifts on the breeze. 

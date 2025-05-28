@@ -1,0 +1,24 @@
+roomid: 141
+zone: poway
+title: Sycamore Creek - Toxic Flow
+description: |
+  The air here is heavy with the stench of chemicals and decay, emanating from Sycamore Creek.
+  Its waters flow a sickly, unnatural green, with oily bubbles rising to the surface and popping softly.
+  On the muddy banks, large, reptilian shapes resembling crocodiles bask in the dim light, their scales glistening 
+  with toxic slime. The ground is littered with skeletal remains of unfortunate creatures.
+mapsymbol: '!'
+maplegend: SycamoreCk
+biome: swamp # Toxic green creek fits swamp biome
+exits:
+  north:
+    roomid: 12    # Back to South Poway Crossroads
+spawninfo:
+- mobid: 15      # Mutant Lizard (assuming mobid 15 is appropriate)
+  message: A croc-sized mutant lizard slithers into view, its eyes glowing faintly.
+  respawnrate: 30 minutes
+  maxcount: 2
+idlemessages:
+- The toxic creek gurgles ominously.
+- A low hiss echoes from the muddy banks.
+- 'The ground feels unnervingly soft, and a strange odor rises from it.'
+- Distant splashing suggests something large moving in the toxic water. 

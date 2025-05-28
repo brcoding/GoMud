@@ -1,0 +1,26 @@
+roomid: 111
+zone: poway
+title: The Palisades - Cliffside Vantage
+description: |
+  The ground here drops away sharply, forming a steep, almost sheer bluff known as The Palisades.
+  This natural defensive position offers a commanding view of the surrounding wasteland and is 
+  rumored to be relatively zombie-proof. At the base of the cliffs, a hidden aquifer still provides 
+  sweet, untainted water, a rare and valuable resource in this blighted world.
+mapsymbol: 'V'
+maplegend: Palisades
+biome: cliffs # Steep bluff
+exits:
+  west:
+    roomid: 106   # Back to Huntington Gate
+  south:
+    roomid: 112   # To High Valley (planned)
+spawninfo:
+- mobid: 22      # Palisades Lookout (assuming mobid 22)
+  message: A keen-eyed lookout watches from a crag in the cliff face.
+  respawnrate: 40 minutes
+  maxcount: 1
+idlemessages:
+- The wind whistles as it sweeps up the cliff face.
+- From this height, the devastation of Poway stretches out like a scarred map.
+- Loose stones skitter down the bluff, dislodged by unseen movement.
+- 'A faint trickle of water can be heard from a fissure in the rock, hinting at the aquifer below.' 

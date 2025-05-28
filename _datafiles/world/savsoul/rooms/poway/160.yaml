@@ -1,0 +1,19 @@
+roomid: 160
+zone: poway
+title: Scripps-Poway Crater - Ground Zero
+description: You stand at the edge of devastation itself. Where the Scripps-Poway Parkway 
+  once carried thousands of commuters, there is now only a massive bowl of fused obsidian 
+  glass. The crater stretches for miles, its black surface reflecting the sick sky like 
+  a mirror. Nothing survived here. Nothing ever will. The radiation readings are off the 
+  scale, and even hardened scavengers dare not venture closer.
+mapsymbol: ✖
+maplegend: Crater
+biome: wasteland
+exits:
+  northeast:
+    roomid: 12     # Back to crossroads
+idlemessages:
+- Your radiation detector screams a continuous alarm.
+- The obsidian surface cracks and shifts, still cooling after centuries.
+- A heat mirage rises from the crater, distorting the hellish view.
+- In the distance, glass formations tinkle as thermal stress shatters them. 

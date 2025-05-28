@@ -1,0 +1,22 @@
+roomid: 107
+zone: poway
+title: Heritage Estates - Plutonium Dust Zone
+description: |
+  A chilling, unnatural silence hangs over Heritage Estates. A fine, grey dust coats everything, 
+  carried by the winds from the nearby Scripps-Poway crater. This is plutonium dust, deadly and persistent.
+  Entry without a full lead-lined radiation suit is a death sentence. The skeletal remains of homes 
+  are barely visible through the shimmering, irradiated air. Geiger counters scream in this zone.
+mapsymbol: '!'
+maplegend: Heritage
+biome: wasteland # Highly radioactive
+exits:
+  south:
+    roomid: 106   # Back to Huntington Gate
+  east:
+    roomid: 108   # To Heritage Ranch Estates (planned)
+# No mobs should be here due to extreme radiation
+idlemessages:
+- Your radiation detector emits a frantic, high-pitched whine.
+- The air shimmers with visible heat and radiation.
+- Grey dust settles on your gear, each particle a tiny mote of death.
+- 'A faded sign, barely legible, warns: "CONTAMINATED AREA - DO NOT ENTER".' 

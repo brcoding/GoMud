@@ -1,0 +1,28 @@
+roomid: 191
+zone: poway
+title: Poway Road - Auto Row
+description: |
+  The skeletal remains of car dealerships and repair shops line this stretch of Poway Road. 
+  Rusted hulks of vehicles, picked clean of most useful parts, serve as makeshift stalls for a 
+  thriving rust-belt bazaar. Scavengers and mechanics barter for spare motors, scavenged electronics, 
+  and precious drops of octane. The air smells of oil, ozone, and desperation.
+mapsymbol: 'A'
+maplegend: Auto Row
+biome: city
+exits:
+  east:
+    roomid: 7      # To Poway Road Junction
+  north:
+    roomid: 196    # To Old Poway Village (shortcut/back alley)
+spawninfo:
+- mobid: 12      # Scavenger Trader
+  message: A greasy scavenger eyes you from behind a pile of car parts.
+  respawnrate: 20 minutes
+- mobid: 13      # Mutant Rat
+  message: A large, oily rat scurries out from under a car wreck.
+  respawnrate: 10 minutes
+idlemessages:
+- 'Someone shouts: "Fresh spark plugs! Get your spark plugs here!"'
+- The whine of a struggling generator can be heard nearby.
+- A deal is struck over a barely functional fuel injector, sealed with a grimy handshake.
+- 'A faded banner for "Honest Dave''s Used Cars" flaps forlornly.' 

@@ -1,0 +1,25 @@
+roomid: 182
+zone: poway
+title: Poway Library - Archive Vault
+description: Behind reinforced steel doors lies one of Poway's greatest treasures - books. 
+  The main reading room has been converted into a climate-controlled vault, with precious 
+  texts stored under nitrogen to prevent further decay. Armed scribes work at copying 
+  stations, transcribing crumbling pages onto whatever materials they can find. The 
+  knowledge of the old world lives on here, for those who can afford the steep access fees.
+mapsymbol: L
+maplegend: Library
+biome: city
+exits:
+  south:
+    roomid: 181    # Back to plaza
+containers:
+  archive:
+    description: A sealed display case containing pre-war texts
+    items:
+    - itemId: 301  # Ancient tome
+    - itemId: 302  # Technical manual
+idlemessages:
+- A scribe carefully turns the page of an ancient book with gloved hands.
+- The nitrogen preservation system hisses softly, protecting the archives.
+- Guards check the credentials of a visitor seeking rare knowledge.
+- Someone whispers urgently about a rumored first edition in the deep vault. 

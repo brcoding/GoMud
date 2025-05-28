@@ -160,6 +160,7 @@ color8:
   user-corpse: 8
   tip-text: 5
   character-joined: 5
+
 color256:
   table-title: 2
   userid: black
@@ -211,7 +212,7 @@ color256:
   map-mountains: 3
   map-wall:  cyan # Bright black
   map-legend: 8
-  trail-dead: 8
+  trail-dead: 90
   trail-weak: 7
   trail-good: 2
   trail-warm: 1

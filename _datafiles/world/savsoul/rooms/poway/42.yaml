@@ -1,0 +1,26 @@
+roomid: 42
+zone: poway
+title: Stoneridge Chateaus - Fortified Quarry
+description: |
+  The remains of luxury chateaus are built into the sturdy rock of an old quarry.
+  The quarry's stone walls have been expertly repurposed into high parapets, bristling with crossbow nests.
+  This fortified settlement is difficult to assault, and its residents are well-prepared to defend their claim.
+  The tang of cut stone and woodsmoke hangs in the air.
+mapsymbol: 'F' # Fortified
+maplegend: Stoneridge
+biome: fort # Repurposed quarry walls as parapets fits 'fort'
+exits:
+  north:
+    roomid: 12    # Back to South Poway Crossroads
+  east:
+    roomid: 43    # To Rolling Hills Estates (planned)
+spawninfo:
+- mobid: 23      # Chateau Defender (assuming mobid 23)
+  message: A stern-faced defender with a crossbow watches you from the parapets.
+  respawnrate: 20 minutes
+  maxcount: 3
+idlemessages:
+- The sharp crack of a crossbow firing echoes from the walls.
+- Smoke rises from a chimney somewhere within the fortified chateaus.
+- 'A banner depicting a crossed pickaxe and crossbow flies above the main gate.'
+- Residents can be heard training with melee weapons in a courtyard. 

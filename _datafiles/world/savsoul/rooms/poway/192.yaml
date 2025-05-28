@@ -1,0 +1,25 @@
+roomid: 192
+zone: poway
+title: Poway Road - Central Retail Ruins
+description: |
+  The heart of Poway's old shopping district is a collection of shell-shocked storefronts. 
+  Shattered windows are boarded up with scrap metal, and faded advertisements promise sales that ended centuries ago. 
+  Despite the decay, a few hardy merchants operate from within the more intact structures, their neon "OPEN" signs 
+  flickering ironically in the dim light. The silence is broken only by the wind whistling through broken signs.
+mapsymbol: 'R'
+maplegend: Retail
+biome: city
+exits:
+  north:
+    roomid: 7      # To Poway Road Junction
+  east:
+    roomid: 193    # To Poway Rd East Service (planned)
+spawninfo:
+- mobid: 14      # Wary Merchant
+  message: A merchant peers suspiciously from a darkened doorway.
+  respawnrate: 25 minutes
+idlemessages:
+- A neon "OPEN" sign sputters and dies, then flickers back to life.
+- The wind whistles through a shattered department store window.
+- Rats scurry through the rubble of a collapsed storefront.
+- 'A faded sign reads: "Grand Opening! Everything Must Go!"' 

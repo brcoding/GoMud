@@ -1,0 +1,51 @@
+roomid: 1
+zone: poway
+zoneconfig:
+  roomid: 1
+  autoscale:
+    minimum: 1
+    maximum: 5
+  idlemessages:
+  - A cold wind blows through the city.
+  musicfile: static/audio/music/frostfang.mp3
+title: Poway City Center
+description: A once vibrant city that offered bustling markets and a thriving community centered by a 
+  large statue labeled "394" adjacent to a park and a few crumbling buildings stretches out before you.
+  The city is now a shadow of its former self, with only a few brave souls remaining trying to grift the
+  few remaining visitors.
+mapsymbol: T
+maplegend: Poway
+biome: city
+exits:
+  east:
+    roomid: 54     # The Knolls
+  north:
+    roomid: 2      # North Gateway
+  south:
+    roomid: 12     # South Crossroads
+  west:
+    roomid: 7      # Poway Road Junction
+  northeast:
+    roomid: 126    # Rancho Arbolitos (to Lake area)
+spawninfo:
+- mobid: 2
+  message: A town guard emerges from a nearby building.
+  idlecommands:
+  - say did you know there's a sign in the Townsquare with a map of the area?
+  - ""
+  - ""
+  - ""
+  - wander
+  levelmod: 10
+  respawnrate: 5 real minutes
+idlemessages:
+- A <ansi fg="mobname">citizen</ansi> walks up and examines the <ansi fg="itemname">map</ansi>
+  posted to the <ansi fg="itemname">sign</ansi>.
+- A <ansi fg="mobname">guard</ansi> is looking at the <ansi fg="itemname">sign</ansi>.
+- A <ansi fg="mobname">craftsman</ansi> gives the <ansi fg="itemname">sign</ansi>
+  a little kick, nodding in approval.
+- A couple of <ansi fg="mobname">townspeople</ansi> are arguing about the accuracy
+  of the <ansi fg="itemname">map</ansi> posted to the <ansi fg="itemname">sign</ansi>
+  here.
+- A <ansi fg="mobname">guard</ansi> brushes off some of the snow that has accumulated
+  on the <ansi fg="itemname">sign</ansi>.

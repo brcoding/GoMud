@@ -1,0 +1,20 @@
+roomid: 114
+zone: poway
+title: Green Valley Summit - Sealed Bunker
+description: |
+  The windswept summit of Green Valley offers a panoramic, if desolate, view of the ruins below.
+  Dominating the peak is a massive, pre-war concrete bunker, its steel doors sealed shut since "Day 0".
+  Strange hums occasionally emanate from within, fueling rumors among scavengers of cryo-sleepers 
+  and untold technological treasures locked away. The air is thin and carries a faint metallic taste.
+mapsymbol: 'B'
+maplegend: SummitBunker
+biome: mountains # Windswept summit
+exits:
+  south:
+    roomid: 102   # Back to Green Valley Highlands
+# Bunker entrance could be a special exit or interactable object
+idlemessages:
+- A low, almost sub-audible hum seems to vibrate through the ground near the bunker.
+- 'Graffiti on the bunker door reads: "Dead Inside? Or Future Rich?"'
+- The wind howls across the summit, carrying dust from the crater to the south.
+- An old, radiation-scarred flag pole stands empty, creaking in the wind. 

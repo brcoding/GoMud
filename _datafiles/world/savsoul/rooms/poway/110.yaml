@@ -1,0 +1,24 @@
+roomid: 110
+zone: poway
+title: Old Coach Collection - Bike Gang Turf
+description: |
+  This half-collapsed cul-de-sac of what were once luxury homes is now the undisputed turf 
+  of the "Coachmen" bike gang. Their roaring, modified motorcycles are parked haphazardly 
+  between ruined houses. Graffiti covers every remaining wall, and armed gangers watch 
+  all approaches. They are known to charge a hefty toll for passage through their territory.
+mapsymbol: 'B'
+maplegend: OldCoach
+biome: wasteland # Gang territory
+exits:
+  east:
+    roomid: 101   # Back to Green Valley Estates
+spawninfo:
+- mobid: 21      # Coachman Biker (assuming mobid 21)
+  message: A tough-looking biker with a spiked bat glares at you.
+  respawnrate: 15 minutes
+  maxcount: 4
+idlemessages:
+- The roar of a motorcycle engine echoes through the cul-de-sac.
+- 'Crude graffiti on a wall proclaims: "Coachmen Rule! Pay Up or Bleed Out!"'
+- The smell of gasoline and unwashed bodies is strong here.
+- A biker sharpens a rusty blade on a piece of concrete. 

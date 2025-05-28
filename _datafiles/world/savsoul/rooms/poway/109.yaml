@@ -1,0 +1,29 @@
+roomid: 109
+zone: poway
+title: Lomas Verdes Estates - Turbine Grove Bazaar
+description: |
+  A grove of towering, pre-war wind turbines dominates the skyline here, their massive blades still slowly turning, 
+  powering a string of flickering lights that illuminate a surprisingly active community.
+  Makeshift stalls form a bazaar that comes alive especially during the dark of the moon, where residents trade 
+  scavenged goods, crafted items, and information under the hum of the turbines.
+mapsymbol: 'W'
+maplegend: LomasVerdes
+biome: wasteland # Settled area with functioning tech
+exits:
+  west:
+    roomid: 101   # Back to Green Valley Estates
+  north:
+    roomid: 115   # To La Manda
+spawninfo:
+- mobid: 19      # Turbine Guard (assuming mobid 19)
+  message: A guard, silhouetted against a turbine, watches your approach.
+  respawnrate: 30 minutes
+  maxcount: 2
+- mobid: 20      # Bazaar Merchant (assuming mobid 20)
+  message: A merchant under a flickering light calls out, offering rare finds.
+  respawnrate: 45 minutes
+idlemessages:
+- The low hum of the wind turbines is a constant presence.
+- 'A sign reads: "Dark-Moon Bazaar Tonight! Good Deals, No Questions!"'
+- Children play tag around the base of a massive turbine.
+- The smell of cooked food and something vaguely alcoholic drifts from the bazaar. 

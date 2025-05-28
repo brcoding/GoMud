@@ -1,0 +1,30 @@
+roomid: 197
+zone: poway
+title: Poway Business Park - Warehouse Row
+description: |
+  Once the industrial heart of Poway, this sprawling complex of warehouses and loading docks 
+  has been picked clean by decades of scavengers. Rusted forklifts sit abandoned between 
+  collapsed storage racks. The few intact structures serve as dangerous meeting grounds for 
+  black market deals and gang negotiations. Graffiti tags mark territorial boundaries, and 
+  the echo of footsteps on concrete carries dangerously far in the empty spaces.
+mapsymbol: 'W'
+maplegend: Warehouse
+biome: city
+exits:
+  west:
+    roomid: 196    # Back to Old Poway Village
+  north:
+    roomid: 198    # To Industrial Zone (planned)
+spawninfo:
+- mobid: 24      # Gang Scout
+  message: A heavily tattooed scout watches from atop a shipping container.
+  respawnrate: 20 minutes
+  maxcount: 2
+- mobid: 25      # Black Market Dealer
+  message: A shady figure emerges from the shadows between warehouses.
+  respawnrate: 30 minutes
+idlemessages:
+- The clang of metal on metal echoes through the empty warehouses.
+- 'Spray-painted on a wall: "Neutral Ground - Break the Peace, Pay the Price"'
+- A rat scurries across broken glass, the sound unnaturally loud.
+- The distant rumble of a generator suggests someone is using power here. 

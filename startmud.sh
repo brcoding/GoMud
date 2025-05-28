@@ -36,7 +36,8 @@
 	     cd "$MUDDIR"
 	     echo "starting binary....."
              export CONFIG_PATH=/GoMudLLM/GoMud/_datafiles/config.custom.yaml
-             "$SERVER_BINARY" >/dev/null 2>&1 &
+             "$SERVER_BINARY"
+	     #>/dev/null 2>&1 &
              echo $! > "$PIDFILE"
              echo "MUD Server started"
          else

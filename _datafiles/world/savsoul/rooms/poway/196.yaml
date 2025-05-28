@@ -1,0 +1,30 @@
+roomid: 196
+zone: poway
+title: Old Poway Village - Trading Post
+description: The historic boardwalk has been resurrected as the region's primary trading 
+  hub. Salvaged wood and metal stalls line the old-west themed street, where merchants 
+  hawk everything from rad-away pills to hand-forged weapons. The rhythmic clang of a 
+  blacksmith's hammer provides a steady beat to the chaos of bartering. This is where 
+  the new economy thrives, built on the bones of tourist nostalgia.
+mapsymbol: $
+maplegend: Market
+biome: city
+exits:
+  south:
+    roomid: 7      # Back to junction
+  east:
+    roomid: 197    # Business Park
+  west:
+    roomid: 191    # Auto Row
+spawninfo:
+- mobid: 10      # Merchant
+  message: A trader sets up their wares on a rickety table.
+  respawnrate: 30 minutes
+- mobid: 11      # Blacksmith
+  message: A blacksmith emerges from the forge, wiping soot from their brow.
+  respawnrate: 45 minutes
+idlemessages:
+- 'The blacksmith''s hammer rings out: CLANG... CLANG... CLANG...'
+- 'Merchants shout their wares: "Bullets! Fresh water! Rad-free meat!"'
+- A successful trade is sealed with the traditional spit-handshake.
+- Smoke from the forge mixes with the smell of grilled mystery meat. 

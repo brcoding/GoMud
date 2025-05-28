@@ -136,6 +136,11 @@ var (
 			description: `Wheat or other food is grown here.`,
 			burns:       true,
 		},
+		`wasteland`: {
+			name:        `Wasteland`,
+			symbol:      '☢',
+			description: `The blasted remnants of civilization. Radiation, ruins, and danger lurk everywhere. Only the desperate or well-prepared venture into these forsaken lands.`,
+		},
 	}
 )
 

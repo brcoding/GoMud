@@ -1,0 +1,25 @@
+roomid: 54
+zone: poway
+title: The Knolls - Sand Ghoul Territory  
+description: The rolling hills that once hosted upscale homes are now riddled with burrows 
+  and sinkholes. As dusk approaches, an unnatural chittering echoes from the depths. The 
+  "sand ghouls" - radiation-mutated burrowing creatures - have claimed this territory. 
+  Scattered bones and torn equipment mark where the unwary met their end. Even hardened 
+  scavengers avoid this place after dark.
+mapsymbol: !
+maplegend: Danger
+biome: wasteland
+exits:
+  west:
+    roomid: 1      # Back to city center
+  north:
+    roomid: 155    # Oak Knoll
+  south:
+    roomid: 153    # Rancho Verde
+  east:
+    roomid: 151    # Range View Estates
+idlemessages:
+- Sand shifts ominously as something moves beneath the surface.
+- A ghoul's pale claw briefly emerges from a burrow before retreating.
+- The chittering grows louder as shadows lengthen across the knolls.
+- Fresh excavations suggest the ghoul colony is expanding. 

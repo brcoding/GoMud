@@ -1,0 +1,24 @@
+roomid: 105
+zone: poway
+title: Bridlewood Lakeside - Brine Pool & Hydroponics
+description: |
+  The once-picturesque Bridlewood Lake has shrunk to a shimmering, hypersaline brine pool.
+  Despite the desolation, a small community clings to life here. Floating rafts covered in solar panels 
+  drift on the toxic water, powering a surprisingly advanced hydroponic dome that glows with an internal green light. 
+  The air smells of salt, algae, and the faint hum of technology.
+mapsymbol: 'H' # Hydroponics or Habitation
+maplegend: Lakeside
+biome: shore # Brine pool with solar rafts
+exits:
+  east:
+    roomid: 3    # Back to Bridlewood Ruins
+spawninfo:
+- mobid: 17      # Lakeside Technician (assuming mobid 17)
+  message: A figure in a protective suit adjusts wiring on a solar raft.
+  respawnrate: 30 minutes
+  maxcount: 2
+idlemessages:
+- The hydroponic dome hums with a steady, low-frequency vibration.
+- Solar panels glint on the surface of the brine pool.
+- A faint, sweet smell emanates from the dome, a stark contrast to the salty air.
+- 'Warning signs depict mutated fish and advise against contact with the water.' 

@@ -1,0 +1,24 @@
+roomid: 112
+zone: poway
+title: High Valley - Coyote Barrens
+description: |
+  This wide, desolate valley is a fire-scorched barren. The earth is baked hard and cracked, 
+  and the blackened skeletons of trees stand as grim sentinels. Packs of mutated coyotes, 
+  larger and more aggressive than their pre-war ancestors, roam these barrens. 
+  Travelers are few, and those who pass through do so with caution and speed.
+mapsymbol: 'c'
+maplegend: HighValley
+biome: wasteland # Fire-scorched, coyote territory
+exits:
+  north:
+    roomid: 111   # Back to The Palisades
+spawninfo:
+- mobid: 29      # Mutated Coyote (assuming mobid 29)
+  message: A lean, mutated coyote with glowing eyes pads silently into view.
+  respawnrate: 15 minutes
+  maxcount: 4
+idlemessages:
+- A mournful howl from a mutated coyote echoes across the barrens.
+- The air is still and hot, with the faint smell of old fires.
+- Tumbleweeds, bristling with radioactive thorns, roll across the cracked earth.
+- The bleached bones of some large animal lie half-buried in the dust. 

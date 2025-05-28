@@ -1,0 +1,21 @@
+roomid: 193
+zone: poway
+title: Poway Road - East Service Bay Graveyard
+description: |
+  The eastern end of Poway Road descends into a toxic swamp where service bays once stood.
+  The concrete is cracked and submerged in foul, cyan-colored water that bubbles ominously.
+  The skeletal frames of hydraulic lifts jut from the muck like grasping claws.
+  The air is thick with chemical fumes, and the only sounds are the soft pop of gas bubbles
+  and the squelch of unseen things moving beneath the surface. This area is highly irradiated.
+mapsymbol: 'X'
+maplegend: Toxic Service
+biome: swamp # 'swamp' seems more appropriate than 'wasteland' or 'desert' given the description
+exits:
+  west:
+    roomid: 192    # Back to Central Retail Ruins
+# No mobs should intentionally wander here due to toxicity
+idlemessages:
+- A large bubble pops on the surface of the cyan water, releasing a puff of acrid gas.
+- The rusted hook of a tow truck sways gently in the toxic breeze.
+- 'Warning signs, mostly submerged, hint at "Biohazard" and "Extreme Danger".'
+- A faint, rhythmic pulsing can be felt through the ground, like something large breathing. 

@@ -1,0 +1,25 @@
+roomid: 126
+zone: poway
+title: Rancho Arbolitos - Woodside Canopy
+description: Massive pre-war oaks have somehow survived the apocalypse, their gnarled branches 
+  spreading a protective canopy over this small community. Rope bridges and wooden platforms 
+  connect elaborate treehouses where families have made their homes in the branches. The 
+  elevated living keeps residents safe from ground-level threats, and the oak's mutation 
+  has made their bark naturally radiation-resistant.
+mapsymbol: T
+maplegend: Treetown
+biome: forest
+exits:
+  south:
+    roomid: 161    # To Lake Poway
+  west:
+    roomid: 1      # Back to city center
+  north:
+    roomid: 127    # Rancho Arbolitos Parkside
+  east:
+    roomid: 135    # Summerfield Estates
+idlemessages:
+- Rope bridges sway gently as residents traverse between treehouses.
+- An oak's mutated bark glows faintly, absorbing and neutralizing radiation.
+- Children peer down from wooden platforms, watching travelers below.
+- The ancient oaks creak and groan, but their roots hold firm. 

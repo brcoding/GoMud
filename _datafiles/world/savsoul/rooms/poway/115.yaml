@@ -1,0 +1,26 @@
+roomid: 115
+zone: poway
+title: La Manda - Kevlar Greenhouses
+description: |
+  This fortified community is a small oasis of green in the wasteland. Rows of large greenhouses, 
+  their transparent panels reinforced with sheets of Kevlar, dominate the area. 
+  The constant hum of pollen-filters and air-circulators provides a backdrop to the quiet industry within. 
+  Residents, often seen in protective gear, meticulously tend to the precious crops that sustain them.
+mapsymbol: 'K' # Kevlar or Kommune
+maplegend: LaManda
+biome: farmland # Community greenhouses
+exits:
+  south:
+    roomid: 109   # Back to Lomas Verdes Estates
+  west:
+    roomid: 16    # To Del Poniente
+spawninfo:
+- mobid: 24      # La Manda Farmer (assuming mobid 24)
+  message: A farmer in a pollen mask nods curtly as they inspect a row of mutated vegetables.
+  respawnrate: 30 minutes
+  maxcount: 3
+idlemessages:
+- The low hum of air filtration units is a constant sound.
+- Inside the Kevlar-patched greenhouses, rows of strange plants grow under artificial lights.
+- 'A sign at the community entrance reads: "La Manda Collective - Pure Food, Fair Trade."'
+- Children in small respirators play in a designated, decontaminated area. 

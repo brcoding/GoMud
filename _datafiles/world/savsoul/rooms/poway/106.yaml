@@ -1,0 +1,23 @@
+roomid: 106
+zone: poway
+title: Huntington Gate - Elite Citadel
+description: A fortress of pre-war luxury stands defiant against the apocalypse. EMP-hardened 
+  drone sentries sweep overhead with mechanical precision, their cameras tracking every 
+  movement. The massive gates are reinforced with salvaged tank armor, and electromagnetic 
+  barriers hum with deadly energy. This is where Poway's elite retreated when the bombs 
+  fell, and they've held their ground ever since.
+mapsymbol: '@'
+maplegend: Citadel
+biome: city
+exits:
+  southwest:
+    roomid: 2      # Back to gateway
+  north:
+    roomid: 107    # Heritage Estates (dangerous)
+  east:
+    roomid: 111    # The Palisades
+idlemessages:
+- A drone hovers past, its weapons systems actively scanning for threats.
+- The electromagnetic barriers pulse with a low, menacing hum.
+- Guards in full combat armor watch from reinforced towers.
+- 'A loudspeaker crackles: "Move along, scavenger. Nothing for you here."' 

@@ -1,0 +1,23 @@
+roomid: 161
+zone: poway
+title: Lake Poway - Pontoon Village
+description: The lake has shrunk to half its original size, but its waters remain one of 
+  the region's few potable sources. A floating village of lashed-together pontoons and 
+  salvaged boats rings the shoreline, home to those who guard this precious resource. 
+  Fishing nets dry in the sun alongside water purification rigs. The sound of children 
+  playing - a rare thing in these times - drifts across the water.
+mapsymbol: ~
+maplegend: Lake
+biome: shore
+exits:
+  south:
+    roomid: 162    # Blue Sky Reserve
+  east:
+    roomid: 163    # Old Poway Park
+  north:
+    roomid: 126    # Connection to central area
+idlemessages:
+- Children splash in the shallows under the watchful eyes of guards.
+- A fisherman pulls in a net, revealing a catch of mutant but edible fish.
+- Water purifiers hum steadily, producing the village's most valuable commodity.
+- Pontoon bridges creak and sway as residents move between floating homes. 

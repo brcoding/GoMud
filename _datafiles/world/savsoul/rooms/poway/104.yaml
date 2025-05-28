@@ -1,0 +1,24 @@
+roomid: 104
+zone: poway
+title: Bridlewood Country Estates - Rooftop Gardens
+description: |
+  The shells of once-grand estate homes cling precariously to the hillsides. 
+  Many rooftops have been converted into surprisingly lush gardens, irrigated by complex systems of pipes and cisterns. 
+  The air is tense; residents here are wary, known for trading precious filtered water for shotgun shells and other munitions. 
+  Barricades made of salvaged furniture and car parts block easy access to many homes.
+mapsymbol: 'G'
+maplegend: Gardens
+biome: wasteland # Urban decay with rooftop gardens
+exits:
+  south:
+    roomid: 3    # Back to Bridlewood Ruins
+spawninfo:
+- mobid: 16      # Wary Resident (assuming mobid 16)
+  message: A nervous resident peeks from behind a barricade, clutching a shotgun.
+  respawnrate: 25 minutes
+  maxcount: 3
+idlemessages:
+- The metallic tang of shotgun shells hangs in the air.
+- 'A voice calls out: "Got water? We got shells!"'
+- Water drips slowly from a network of pipes into a collection barrel.
+- The scent of blooming nightshade wafts from a rooftop garden. 

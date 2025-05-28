@@ -1,0 +1,23 @@
+roomid: 3
+zone: poway
+title: Bridlewood Ruins
+description: The remains of once-elegant stables stretch before you, their wooden frames 
+  warped and blackened. What were once paddocks for prize horses now serve as makeshift 
+  pens for the shuffling undead. Radioactive horse skeletons lie scattered about, their 
+  bones emanating an eerie green glow in the perpetual twilight. The stench of decay 
+  and radiation is overwhelming.
+mapsymbol: X
+maplegend: Ruins
+biome: wasteland
+exits:
+  east:
+    roomid: 2     # Back to gateway
+  north:
+    roomid: 104   # Bridlewood Country Estates
+  west:
+    roomid: 105   # Bridlewood Lakeside
+idlemessages:
+- A zombie horse whinnies from beyond the fence, its vocal cords long rotted.
+- The geiger counter on a nearby post clicks rapidly, warning of danger.
+- Glowing bones rattle as a rad-wind sweeps through the paddocks.
+- Something large shifts in the shadows of the collapsed barn. 

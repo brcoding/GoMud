@@ -1,0 +1,26 @@
+roomid: 102
+zone: poway
+title: Green Valley Highlands - Collapsed Terraces
+description: |
+  The once-manicured terraces of the Green Valley Highlands have catastrophically slid downhill, 
+  likely a result of the "Fifth Tremor" survivors whisper about. Homes sit at skewed angles, half-buried in earth.
+  Despite the destruction, or perhaps because of it, small copper stills are tucked away in the gullies and ravines, 
+  their operators likely brewing potent, if questionable, spirits from mutated desert fruits.
+mapsymbol: 'S' # Stills or Slump
+maplegend: Highlands
+biome: wasteland # Collapsed terrain, makeshift stills
+exits:
+  south:
+    roomid: 101   # Back to Green Valley Estates
+  north:
+    roomid: 114   # To Green Valley Summit (planned)
+spawninfo:
+- mobid: 18      # Still Operator (assuming mobid 18)
+  message: A grizzled figure with a perpetual cough tends a bubbling copper still.
+  respawnrate: 35 minutes
+  maxcount: 1
+idlemessages:
+- The distinct smell of fermenting mash and strong alcohol drifts from a nearby gully.
+- Loose rocks tumble down a steep, unstable slope.
+- 'A crudely painted sign reads: "Keep Out - Survivors Only - Good Moonshine This Way ->" with the arrow pointing vaguely uphill.'
+- The ground here feels unstable, prone to further slides. 

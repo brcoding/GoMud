@@ -1,0 +1,25 @@
+roomid: 101
+zone: poway
+title: Green Valley Estates
+description: Tarp-covered mansions line the cracked boulevards, their once-pristine facades 
+  now reinforced with welded steel fences and razor wire. Where manicured lawns once grew, 
+  mushroom farms now flourish in the perpetual shade, their pale caps glowing faintly in 
+  the dim light. The air is thick with the earthy smell of fungi and the metallic tang 
+  of fortification.
+mapsymbol: H
+maplegend: Estates
+biome: wasteland
+exits:
+  south:
+    roomid: 2      # Back to gateway
+  north:
+    roomid: 102    # Green Valley Highlands
+  east:
+    roomid: 109    # Lomas Verdes Estates
+  west:
+    roomid: 110    # Old Coach Collection
+idlemessages:
+- A guard patrols the steel fence line, rifle at the ready.
+- Mushroom farmers tend their crops with radiation-proof gloves.
+- The tarp on a nearby mansion flaps, revealing boarded windows beneath.
+- Someone peers out from behind a fortified door, then quickly retreats. 

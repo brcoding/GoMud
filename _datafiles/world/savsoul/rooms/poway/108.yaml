@@ -1,0 +1,28 @@
+roomid: 108
+zone: poway
+title: Heritage Ranch Estates - Feral Dog Territory
+description: |
+  The gutted shells of sprawling ranch homes are all that remain of this once-affluent area. 
+  Many have been crudely repurposed as pens for hardy, mutated goats. The outer yards and 
+  surrounding scrubland are the hunting grounds of vicious packs of feral dogs, their howls 
+  echoing through the ruins. The air is thick with the smell of goat, dog, and decay.
+mapsymbol: 'd'
+maplegend: HeritageRch
+biome: wasteland # Ruined ranches, animal pens
+exits:
+  west:
+    roomid: 107   # Back to Heritage Estates (Plutonium Dust Zone)
+spawninfo:
+- mobid: 27      # Feral Dog (assuming mobid 27)
+  message: A snarling feral dog with matted fur emerges from a ruined outbuilding.
+  respawnrate: 10 minutes
+  maxcount: 5
+- mobid: 28      # Mutated Goat (assuming mobid 28, non-aggressive)
+  message: A three-eyed goat bleats nervously from within a makeshift pen.
+  respawnrate: 20 minutes
+  maxcount: 3
+idlemessages:
+- The chilling howl of a feral dog pack echoes in the distance.
+- Goats bleat from within their pens, their eyes wide with fear.
+- 'A faded sign reads: "Heritage Ranch - Luxury Equestrian Properties".'
+- The ground is littered with gnawed bones and dog droppings. 

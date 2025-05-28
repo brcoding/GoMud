@@ -449,7 +449,7 @@ func GetMap(mapRoomId int, zoomLevel int, mapHeight int, mapWidth int, mapName s
 		displayLines = append(displayLines, string(line))
 		for sym, txtLegend := range legend {
 			txtLc := strings.ToLower(txtLegend)
-			displayLines[i] = strings.Replace(displayLines[i], string(sym), fmt.Sprintf(`<ansi fg="map-room"><ansi fg="map-%s" bg="mapbg-%s">%c</ansi></ansi>`, txtLc, txtLc, sym), -1)
+			displayLines[i] = strings.Replace(displayLines[i], string(sym), fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, sym), -1)
 		}
 	}
 

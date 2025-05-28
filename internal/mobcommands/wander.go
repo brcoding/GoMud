@@ -38,7 +38,7 @@ func Wander(rest string, mob *mobs.Mob, room *rooms.Room) (bool, error) {
 	if rest == `loot` {
 		for exitName, exit := range room.Exits {
 			exitRoom := rooms.LoadRoom(exit.RoomId)
-			if len(exitRoom.Items) > 0 || exitRoom.Gold > 0 {
+			if exitRoom != nil && (len(exitRoom.Items) > 0 || exitRoom.Gold > 0) {
 				exitOptions = append(exitOptions, exitName)
 			}
 		}
@@ -48,7 +48,7 @@ func Wander(rest string, mob *mobs.Mob, room *rooms.Room) (bool, error) {
 	if rest == `players` {
 		for exitName, exit := range room.Exits {
 			exitRoom := rooms.LoadRoom(exit.RoomId)
-			if exitRoom.PlayerCt() > 0 {
+			if exitRoom != nil && exitRoom.PlayerCt() > 0 {
 				exitOptions = append(exitOptions, exitName)
 			}
 		}

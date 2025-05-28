@@ -1,0 +1,24 @@
+roomid: 2
+zone: poway
+title: North Poway Gateway
+description: The cracked asphalt of old Espola Road stretches northward, lined with the 
+  skeletal remains of palm trees. Rusted street signs still mark the way to what were once 
+  affluent estates, though most now show bullet holes and radiation warnings. A makeshift 
+  checkpoint of welded rebar and car doors blocks casual passage north.
+mapsymbol: +
+maplegend: Gateway
+biome: wasteland
+exits:
+  north:
+    roomid: 101  # Green Valley Estates
+  northeast:
+    roomid: 106  # Huntington Gate
+  south:
+    roomid: 1    # Back to Poway City Center
+  west:
+    roomid: 3    # To Bridlewood area
+idlemessages:
+- A radiation detection alarm chirps weakly from a broken pole.
+- Dust devils swirl around the abandoned checkpoint booth.
+- The distant howl of mutated coyotes echoes from the northern hills.
+- A tattered estate sale banner flaps in the radioactive breeze. 

@@ -1,0 +1,27 @@
+roomid: 181
+zone: poway
+title: Civic Center Plaza
+description: The heart of Poway's former government sprawls before you in various states 
+  of decay and makeshift repair. The plaza's fountain has long since dried, now serving 
+  as a defensive position. Canvas and sheet metal patch the civic center's cracked dome, 
+  while the library's reinforced doors hint at treasures within. This is where the 
+  remnants of civilization make their last stand.
+mapsymbol: C
+maplegend: Civic
+biome: city
+exits:
+  west:
+    roomid: 12     # Back to crossroads
+  north:
+    roomid: 182    # Poway Library
+  east:
+    roomid: 183    # Performing Arts Center
+  south:
+    roomid: 189    # East-Campus Medical
+  northwest:
+    roomid: 184    # Poway High Campus
+idlemessages:
+- Council guards patrol the plaza perimeter with salvaged weapons.
+- A scribe hurries between buildings, clutching precious documents.
+- The tattered flag of old Poway still flies from a bent pole.
+- Refugees line up outside the medical center, hoping for treatment. 

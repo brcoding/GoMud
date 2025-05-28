@@ -1,0 +1,20 @@
+roomid: 145
+zone: poway
+title: Twin Peaks Foothills - Cursed Ground
+description: |
+  The ground here is cracked and barren, sloping upwards towards the ominous double peaks 
+  that loom in the distance. Wisps of sulfurous gas drift down from the heights, carrying 
+  a rotten-egg stench and a palpable sense of dread. Locals consider this area cursed, 
+  and few dare to venture further. Strange, unsettling rock formations dot the landscape.
+mapsymbol: '^'
+maplegend: TwinPeaksFt
+biome: wasteland # Barren, sulfurous, cursed ground fits wasteland
+exits:
+  northwest:
+    roomid: 12    # Back to South Poway Crossroads
+  # 'east' or 'northeast' could lead to Twin Peaks Summit (Room 173, planned)
+idlemessages:
+- A gust of wind carries a strong smell of sulfur from the peaks above.
+- The ground trembles slightly, a reminder of the unstable volcanic activity.
+- 'Strange whispers seem to echo from the rocks, though their source is unclear.'
+- No birds sing here, and the silence is heavy and oppressive. 

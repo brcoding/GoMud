@@ -503,7 +503,7 @@ func lookRoom(user *users.UserRecord, roomId int, secretLook bool) {
 			for i := 1; i <= c.Height; i++ {
 				for sym, txtLegend := range legend {
 					txtLc := strings.ToLower(txtLegend)
-					tinyMap[i] = strings.Replace(tinyMap[i], string(sym), fmt.Sprintf(`<ansi fg="map-room"><ansi fg="map-%s" bg="mapbg-%s">%c</ansi></ansi>`, txtLc, txtLc, sym), -1)
+					tinyMap[i] = strings.Replace(tinyMap[i], string(sym), fmt.Sprintf(`<ansi fg="map-%s" bg="mapbg-%s">%c</ansi>`, txtLc, txtLc, sym), -1)
 				}
 			}
 

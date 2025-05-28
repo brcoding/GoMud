@@ -1,0 +1,21 @@
+roomid: 44
+zone: poway
+title: Chaparral Estates - Tinderbox Hills
+description: |
+  The rolling hills here are covered in dense, oil-black chaparral that feels unnaturally dry and brittle.
+  The air is hazy with smoke, even when no flames are visible. During dry lightning storms, this entire area 
+  is known to erupt into spontaneous, raging infernos. The charred skeletons of homes dot the landscape, 
+  testament to the frequent fires. Only the desperate or the fireproof would seek shelter here.
+mapsymbol: 'f' # Fire or flammable
+maplegend: Chaparral
+biome: wasteland # Fire-prone, dangerous
+exits:
+  northwest:
+    roomid: 12    # Back to South Poway Crossroads
+  south:
+    roomid: 145   # To Twin Peaks Foothills
+idlemessages:
+- The smell of smoke and burnt vegetation is overpowering.
+- Wisps of smoke rise from the tinder-dry undergrowth, even without visible flame.
+- 'A distant crackle might be dry brush, or the start of another wildfire.'
+- The ground is covered in a thick layer of ash in many places. 

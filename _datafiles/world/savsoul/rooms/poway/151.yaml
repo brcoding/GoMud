@@ -1,0 +1,24 @@
+roomid: 151
+zone: poway
+title: Range View Estates - Sniper's Roost
+description: |
+  The crumbling remains of Range View Estates offer a commanding, if perilous, view of the eastern territories.
+  The highest, most intact structures have been converted into well-camouflaged sniper roosts. 
+  Movement in the open is ill-advised. Survivors here are fiercely protective of a hidden, fresh-water cistern, 
+  rumored to be one of the last untainted sources in this part of Poway.
+mapsymbol: 'S'
+maplegend: RangeView
+biome: wasteland # Ruined estates, dangerous
+exits:
+  west:
+    roomid: 54    # Back to The Knolls
+spawninfo:
+- mobid: 26      # Sniper (assuming mobid 26)
+  message: The glint of a rifle scope flashes from a high window.
+  respawnrate: 30 minutes
+  maxcount: 2
+idlemessages:
+- A distant gunshot echoes, a deadly reminder of the snipers' presence.
+- The silence here is heavy, broken only by the wind whistling through empty window frames.
+- 'A crudely painted sign near a barricade reads: "TRESPASSERS WILL BE SHOT. SURVIVORS TOO."'
+- The ground is littered with spent shell casings. 
